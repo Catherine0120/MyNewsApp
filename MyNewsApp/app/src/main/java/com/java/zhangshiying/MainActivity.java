@@ -36,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
     DiscoverFragment discoverFragment;
 
+    int currentPage = 1;
+    static final int pageSize = 40;
+
     private class MainHandler extends Handler {
         private final WeakReference<MainActivity> myParent;
         public MainHandler(MainActivity activity) {
@@ -47,17 +50,15 @@ public class MainActivity extends AppCompatActivity {
             String message = msg.obj.toString();
             try {
                 JSONObject obj = new JSONObject(message);
-                int pagesize = Integer.parseInt(obj.getString("pageSize"));
-                int total = obj.getInt("total");
+//                int pagesize = Integer.parseInt(obj.getString("pageSize"));
+//                int total = obj.getInt("total");
                 JSONArray newsDescriptions = obj.getJSONArray("data");
                 ArrayList<News> newsDescriptionList = new ArrayList<>();
                 for (int i = 0; i < newsDescriptions.length(); ++i) {
                     JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
-                    System.out.println(singleNewsDescription);
                     newsDescriptionList.add(new News(singleNewsDescription));
                 }
-                System.out.println(newsDescriptionList.size());
-                discoverFragment = new DiscoverFragment(newsDescriptionList, MainActivity.this);
+                discoverFragment = new DiscoverFragment(newsDescriptionList, MainActivity.this, pageSize);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
 
             } catch (Exception e) {
@@ -116,8 +117,8 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=40&startDate=&endDate=%s&words=&categories=";
-                myUrl = String.format(myUrl, today);
+                String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=";
+                myUrl = String.format(myUrl, pageSize, today);
                 System.out.println(myUrl);
                 String s = "";
                 try {

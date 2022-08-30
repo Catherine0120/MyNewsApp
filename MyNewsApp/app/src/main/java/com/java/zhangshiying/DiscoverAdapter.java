@@ -86,7 +86,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             time = itemView.findViewById(R.id.textTime);
             image = itemView.findViewById(R.id.image);
             video = itemView.findViewById(R.id.video);
-            System.out.println("MyViewHolder prepared");
         }
     }
 
@@ -107,7 +106,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         holder.origin.setText(news.origin);
         holder.time.setText(news.time);
         if (news.imageExist) {
-            System.out.println("[position=" + pos + "]: imageExist, " + news.imageUrls.get(0));
             getBitmapFromURL(news.imageUrls.get(0), pos);
         }
         else holder.image.setVisibility(View.GONE);
@@ -138,6 +136,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                     InputStream input = connection.getInputStream();
                     Bitmap myBitmap = BitmapFactory.decodeStream(input);
                     Log.e("Bitmap","returned");
+
                     Message msg = new Message();
                     Bundle bundle = new Bundle();
                     bundle.putInt("position", pos);

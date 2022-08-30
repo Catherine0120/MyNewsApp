@@ -16,7 +16,6 @@ public class News {
 
     News(JSONObject news) {
         try {
-            System.out.println("News prepared");
             this.title = news.getString("title");
             this.category = news.getString("category");
             this.origin = news.getString("publisher");
