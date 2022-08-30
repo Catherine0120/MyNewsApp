@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/container_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <fragment
+            android:id="@+id/fragment"
+            android:name="com.java.zhangshiying.DiscoverFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottom_app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/light_blue"
+            android:layout_gravity="bottom"
+            app:fabCradleMargin="7dp"
+            app:fabCradleRoundedCornerRadius="50dp"
+            app:titleMargin="0dp">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottom_navigation"
+                android:clickable="true"
+                android:layout_marginBottom="3dp"
+                app:itemTextColor="@drawable/select_menu_color"
+                app:itemIconTint="@drawable/select_menu_color"
+                app:itemIconSize="27dp"
+                app:itemBackground="@color/transparent"
+                app:itemRippleColor="@color/purple_200"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginRight="40dp"
+                android:layout_marginLeft="40dp"
+                android:padding="0dp"
+                android:background="@color/transparent"
+                app:elevation="0dp"
+                app:menu="@menu/bottom_app_bar_menu"/>
+
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/search_action_button"
+            android:clickable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="15dp"
+            android:backgroundTint="@color/teal_700"
+            android:src="@drawable/ic_search"
+            app:tint="@color/white"
+            app:rippleColor="@color/pink"
+            app:borderWidth="0dp"
+            app:layout_anchor="@id/bottom_app_bar"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
