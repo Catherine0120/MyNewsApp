@@ -141,7 +141,8 @@ public class DiscoverFragment extends Fragment {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                if (!recyclerView.canScrollVertically(1)) {
+//                     && newState == RecyclerView.SCROLL_STATE_DRAGGING
                     Toast.makeText(context, "Discovering more news...", Toast.LENGTH_SHORT).show();
                     loadPulse.setVisibility(View.VISIBLE);
                     new Thread() {

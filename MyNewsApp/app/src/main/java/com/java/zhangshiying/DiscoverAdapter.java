@@ -1,6 +1,7 @@
 package com.java.zhangshiying;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -23,15 +24,19 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyViewHolder> {
     Context context;
+    Context myContext;
     ArrayList<News> newsList;
     Fragment fragmentContext;
     View view;
@@ -43,10 +48,13 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             myFragment = new WeakReference<DiscoverFragment>(fragment);
         }
 
+        HashMap<Integer, Bitmap> myMap = new HashMap<>(); //<position, image>
+        HashMap<Integer, Integer> mapHelper = new HashMap<>(); //<position, label>
+
         @Override
         public void handleMessage(@NonNull Message msg) {
             switch(msg.what) {
-                case 1:
+                case 1: //one image only
                     int pos = msg.getData().getInt("position");
                     try {
                         ImageView iv = (ImageView) myLayoutManager.findViewByPosition(pos).findViewById(R.id.image);
@@ -56,6 +64,43 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         e.printStackTrace();
                         System.out.println("[" + pos + "]: handleMessage error");
                         Log.e("loadImage", "error");
+                    }
+                    break;
+                case 2: //two images
+                    int pos_case_2 = msg.getData().getInt("position");
+                    LinearLayout images;
+                    try {
+                        images = (LinearLayout) myLayoutManager.findViewByPosition(pos_case_2).findViewById(R.id.images);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("R.id.images not founded");
+                        break;
+                    }
+                    if (myMap.containsKey(pos_case_2)
+                            && images.getVisibility() != View.VISIBLE
+                            && msg.getData().getInt("label") != mapHelper.get(pos_case_2)) {
+                        try {
+                            images.setVisibility(View.VISIBLE);
+                            ImageView iv_1 = (ImageView) myLayoutManager.findViewByPosition(pos_case_2).findViewById(R.id.image_1);
+                            iv_1.setImageBitmap(myMap.get(pos_case_2));
+                            ImageView iv_2 = (ImageView) myLayoutManager.findViewByPosition(pos_case_2).findViewById(R.id.image_2);
+                            iv_2.setImageBitmap((Bitmap)msg.obj);
+                            myMap.remove(pos_case_2);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("[" + pos_case_2 + "]: handleMessage (image_2) error");
+                            Log.e("loadImage2", "error");
+                        }
+                    }
+                    else if (images.getVisibility() != View.VISIBLE) {
+                        try {
+                            myMap.put(pos_case_2, (Bitmap)msg.obj);
+                            mapHelper.put(pos_case_2, msg.getData().getInt("label"));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("[" + pos_case_2 + "]: handleMessage (image_1) error");
+                            Log.e("loadImage1", "error");
+                        }
                     }
                     break;
                 default:
@@ -94,6 +139,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        myContext = parent.getContext();
         view = View.inflate(context, R.layout.news_card_layout, null);
         return new MyViewHolder(view);
     }
@@ -108,7 +154,12 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         holder.origin.setText(news.origin);
         holder.time.setText(news.time);
         if (news.imageExist) {
-            getBitmapFromURL(news.imageUrls.get(0), pos);
+            boolean twoImages = false;
+            if (news.imageCount >= 2) {
+                twoImages = true;
+                getBitmapFromURL(news.imageUrls.get(0), news.imageUrls.get(1), pos, twoImages);
+            }
+            else getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, twoImages);
         }
         else holder.image.setVisibility(View.GONE);
         if (news.videoExist) {
@@ -118,41 +169,121 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         view.findViewById(R.id.materialCardView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //DO SOMETHING...
+                News news = newsList.get(pos);
+                Gson gson = new Gson();
+                Intent intent = new Intent(myContext, DetailNewsActivity.class);
+                // what's the first parameter in "Intent()"?
+                // tried: context(Mainactivity activity), myContext((ViewGroup parent).getContext()) view.getContext(), fragmentContext.getActivity()
+                intent.putExtra("news", gson.toJson(news));
+                myContext.startActivity(intent);
             }
         });
     }
 
-    private void getBitmapFromURL(String src, int pos) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL(src);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setDoInput(true);
-                    connection.setConnectTimeout(5000);
-                    connection.setReadTimeout(5000);
-                    connection.connect();
-                    InputStream input = connection.getInputStream();
-                    Bitmap myBitmap = BitmapFactory.decodeStream(input);
-                    System.out.println("[" + pos + "]: SUCCESS src = " + src);
-                    Log.e("Bitmap","returned");
 
-                    Message msg = new Message();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("position", pos);
-                    msg.setData(bundle);
-                    msg.obj = myBitmap;
-                    msg.what = 1;
-                    myHandler.sendMessage(msg);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("[" + pos + "]: ERROR src = " + src);
-                    Log.e("Exception",e.getMessage());
+    private void getBitmapFromURL(String src, String src2, int pos, boolean twoImages) {
+        if (!twoImages) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(src);
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setDoInput(true);
+                        connection.setConnectTimeout(5000);
+                        connection.setReadTimeout(5000);
+                        connection.connect();
+                        InputStream input = connection.getInputStream();
+                        Bitmap myBitmap = BitmapFactory.decodeStream(input);
+//                        System.out.println("[" + pos + "]: SUCCESS src = " + src);
+//                        Log.e("Bitmap","returned");
+
+                        Message msg = new Message();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("position", pos);
+                        msg.setData(bundle);
+                        msg.obj = myBitmap;
+                        msg.what = 1;
+                        myHandler.sendMessage(msg);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("[" + pos + "]: ERROR src = " + src);
+                        Log.e("Exception",e.getMessage());
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        }
+
+        else {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(src);
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setDoInput(true);
+                        connection.setConnectTimeout(5000);
+                        connection.setReadTimeout(5000);
+                        connection.connect();
+                        InputStream input = connection.getInputStream();
+                        Bitmap myBitmap = BitmapFactory.decodeStream(input);
+//                        System.out.println("[" + pos + "]: SUCCESS src1 = " + src);
+//                        Log.e("Bitmap1","returned");
+
+                        Message msg = new Message();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("position", pos);
+                        bundle.putInt("label", 1);
+                        msg.setData(bundle);
+                        msg.obj = myBitmap;
+                        msg.what = 2;
+                        myHandler.sendMessage(msg);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("[" + pos + "]: ERROR src1 = " + src);
+                        Log.e("Exception (image_1)",e.getMessage());
+                    }
+                }
+            }).start();
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URL url = new URL(src2);
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setDoInput(true);
+                        connection.setConnectTimeout(5000);
+                        connection.setReadTimeout(5000);
+                        connection.connect();
+                        InputStream input = connection.getInputStream();
+                        Bitmap myBitmap = BitmapFactory.decodeStream(input);
+//                        System.out.println("[" + pos + "]: SUCCESS src2 = " + src2);
+//                        Log.e("Bitmap2","returned");
+
+                        Message msg = new Message();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("position", pos);
+                        bundle.putInt("label", 2);
+                        msg.setData(bundle);
+                        msg.obj = myBitmap;
+                        msg.what = 2;
+                        myHandler.sendMessage(msg);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("[" + pos + "]: ERROR src2 = " + src2);
+                        Log.e("Exception (image_2)",e.getMessage());
+                    }
+                }
+            }).start();
+
+        }
     }
 
     private void castVideo (VideoView vv) {

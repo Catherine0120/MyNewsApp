@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/image_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="150dp"
+            android:src="@mipmap/biden"
+            android:layout_margin="10dp"
+            android:layout_marginTop="15dp"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal|top"/>
+
+        <TextView
+            android:id="@+id/title_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="10dp"
+            android:text="拜登签署实施芯片法行政令 中方此前明确表示坚决反对"
+            android:textSize="20sp"
+            android:fontFamily="@font/dengxianbold"
+            android:lineSpacingExtra="8dp"/>
+
+        <LinearLayout
+            android:id="@+id/info_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/category_detail"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="科技"
+                android:textSize="18sp"
+                android:fontFamily="@font/dengxianbold"
+                android:textColor="@color/blue"/>
+
+            <TextView
+                android:id="@+id/origin_detail"
+                android:layout_weight="3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="凤凰网"
+                android:textAlignment="textEnd"
+                android:textSize="15sp"
+                android:fontFamily="@font/dengxian"/>
+
+            <TextView
+                android:id="@+id/time_detail"
+                android:layout_marginEnd="10dp"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:text="2022-08-26 11:50:33"
+                android:textAlignment="textEnd"
+                android:textSize="15sp"
+                android:fontFamily="@font/dengxian"/>
+
+        </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/blue" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/content_detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:fontFamily="@font/dengxian"
+            android:lineSpacingExtra="10dp"
+            android:textSize="16sp"
+            android:paddingTop="10dp"
+            android:text="【拜登签署实施芯片法行政令 中方此前已明确表示坚决反对】财联社8月26日电，美国总统拜登当地时间8月25日签署一项旨在实施《2022年芯片和科学法案》的行政命令。关于该法案，中国外交部、商务部此前已明确表示，中方坚决反对扰乱国际贸易。根据白宫网站，拜登25日签署的行政令设置了实施《芯片和科学法案》的6个优先事项，还设立了一个由16人组成的跨部门指导委员会，由美国总统国家安全事务助理沙利文等3人共同担任主席，其他成员包括美国国务卿布林肯、财长耶伦、防长奥斯汀以及商务部长雷蒙多等。" />
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

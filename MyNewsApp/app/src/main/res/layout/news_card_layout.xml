@@ -93,6 +93,53 @@
                 app:layout_constraintTop_toBottomOf="@id/textCategory"
                 android:textAlignment="center"/>
 
+            <LinearLayout
+                android:id="@+id/images"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textCategory">
+
+                <ImageView
+                    android:id="@+id/image_1"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/biden"
+                    android:adjustViewBounds="true"/>
+
+                <View
+                    android:id="@+id/my_divider"
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"/>
+
+                <ImageView
+                    android:id="@+id/image_2"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/biden"
+                    android:adjustViewBounds="true"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/images"
+                android:textAlignment="center"/>
+
             <ImageView
                 android:id="@+id/image"
                 android:layout_width="match_parent"

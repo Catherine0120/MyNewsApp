@@ -13,6 +13,9 @@ public class News {
     public List<String> imageUrls,videoUrls;
     boolean imageExist = false;
     boolean videoExist = false;
+    int imageCount = 0;
+
+    public String content;
 
     News(JSONObject news) {
         try {
@@ -20,6 +23,7 @@ public class News {
             this.category = news.getString("category");
             this.origin = news.getString("publisher");
             this.time = news.getString("publishTime");
+            this.content = news.getString("content");
             this.imageUrls = getImage(news);
             this.videoUrls = getVideo(news);
         } catch (JSONException e) {
@@ -55,6 +59,7 @@ public class News {
             else {
                 List<String> urlList = Arrays.asList(imageUrls.split(", "));
                 for (String str : urlList) { if (str != "") urls.add(str);}
+                imageCount = urls.size();
             }
         } catch (JSONException e) {
             e.printStackTrace();
