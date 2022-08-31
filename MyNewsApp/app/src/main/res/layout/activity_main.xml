@@ -62,6 +62,20 @@
             app:borderWidth="0dp"
             app:layout_anchor="@id/bottom_app_bar"/>
 
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:id="@+id/spin_kit_main"
+            style="@style/SpinKitView.Large.Pulse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:SpinKit_Color="#B0ECBCE9"
+            android:layout_margin="120dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentTop="true"
+            android:visibility="invisible"/>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

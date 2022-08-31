@@ -37,7 +37,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     View view;
     LinearLayoutManager myLayoutManager;
 
-
     private class DiscoverHandler extends Handler {
         private final WeakReference<DiscoverFragment> myFragment;
         public DiscoverHandler(DiscoverFragment fragment) {
@@ -55,6 +54,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         iv.setImageBitmap((Bitmap)msg.obj);
                     } catch (Exception e) {
                         e.printStackTrace();
+                        System.out.println("[" + pos + "]: handleMessage error");
                         Log.e("loadImage", "error");
                     }
                     break;
@@ -65,6 +65,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     }
 
     private final DiscoverHandler myHandler = new DiscoverHandler((DiscoverFragment) fragmentContext);
+
+
 
     public DiscoverAdapter(ArrayList<News> newsList, Context context, Fragment fragment, LinearLayoutManager myLayoutManager) {
         this.context = context;
@@ -126,7 +128,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             @Override
             public void run() {
                 try {
-                    Log.e("src",src);
                     URL url = new URL(src);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setDoInput(true);
@@ -135,6 +136,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                     connection.connect();
                     InputStream input = connection.getInputStream();
                     Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                    System.out.println("[" + pos + "]: SUCCESS src = " + src);
                     Log.e("Bitmap","returned");
 
                     Message msg = new Message();
@@ -146,6 +148,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                     myHandler.sendMessage(msg);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    System.out.println("[" + pos + "]: ERROR src = " + src);
                     Log.e("Exception",e.getMessage());
                 }
             }
@@ -164,4 +167,10 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     public int getItemCount() {
         return newsList == null ? 0 : newsList.size();
     }
+
+    public void addNewsList(ArrayList<News> newsList) {
+        this.newsList.addAll(newsList);
+        notifyDataSetChanged();
+    }
+
 }

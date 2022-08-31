@@ -35,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton myFloatingActionButton;
 
     DiscoverFragment discoverFragment;
+    private View loadPulse;
 
-    int currentPage = 1;
-    static final int pageSize = 40;
+    static final int pageSize = 20;
 
     private class MainHandler extends Handler {
         private final WeakReference<MainActivity> myParent;
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     newsDescriptionList.add(new News(singleNewsDescription));
                 }
                 discoverFragment = new DiscoverFragment(newsDescriptionList, MainActivity.this, pageSize);
+                loadPulse.setVisibility(View.INVISIBLE);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
 
             } catch (Exception e) {
@@ -69,11 +70,15 @@ public class MainActivity extends AppCompatActivity {
 
     private final MainHandler myHandler = new MainHandler(this);
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getDiscoverFragment();
+        getDiscoverFragment(true);
+
+        loadPulse = findViewById(R.id.spin_kit_main);
 
         myBottomAppBar = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(myBottomAppBar);
@@ -96,7 +101,9 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_discover_news:
-                        getDiscoverFragment();
+                        loadPulse.bringToFront();
+                        loadPulse.setVisibility(View.VISIBLE);
+                        getDiscoverFragment(false);
                         return true;
 
                     case R.id.menu_favorites:
@@ -109,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getDiscoverFragment() {
+    private void getDiscoverFragment(boolean firstLoad) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String today = simpleDateFormat.format(date);
@@ -117,8 +124,13 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=";
-                myUrl = String.format(myUrl, pageSize, today);
+                String myUrl = "";
+                if (firstLoad) myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=";
+                else {
+                    myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=&page=%d";
+                    discoverFragment.currentPage++;
+                }
+                myUrl = String.format(myUrl, pageSize, today, discoverFragment.currentPage);
                 System.out.println(myUrl);
                 String s = "";
                 try {

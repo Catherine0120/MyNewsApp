@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,11 +38,18 @@ public class DiscoverFragment extends Fragment {
     private Context context;
     private SwipeRefreshLayout mySwipeRefreshView;
     private RecyclerView result;
+    private View loadPulse;
 
     final Handler handler = new Handler();
 
+    private DiscoverAdapter myDiscoverAdapter;
+
     private int pageSize;
-    private int currentPage = 1;
+    static public int currentPage = 1;
+
+    public enum State {
+        DROP_AND_REFRESH, SCROLL_AND_LOAD
+    }
 
     private class MainHandler extends Handler {
         private final WeakReference<DiscoverFragment> myParent;
@@ -62,9 +70,18 @@ public class DiscoverFragment extends Fragment {
                 }
                 newsList = newsDescriptionList;
 
-                LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
-                result.setLayoutManager(myLayoutManager);
-                result.setAdapter(new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager));
+
+                if (msg.getData().getInt("state") == 0) {
+                    LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
+                    result.setLayoutManager(myLayoutManager);
+                    myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager);
+                    result.setAdapter(myDiscoverAdapter);
+                }
+                else {
+                    assert(myDiscoverAdapter != null);
+                    myDiscoverAdapter.addNewsList(newsList);
+                    loadPulse.setVisibility(View.INVISIBLE);
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -73,6 +90,8 @@ public class DiscoverFragment extends Fragment {
     }
 
     private final DiscoverFragment.MainHandler myHandler = new DiscoverFragment.MainHandler(this);
+
+
 
     public DiscoverFragment() {}
 
@@ -87,10 +106,11 @@ public class DiscoverFragment extends Fragment {
                              Bundle savedInstanceState) {
         View currentView = inflater.inflate(R.layout.fragment_discover, container, false);
         result = currentView.findViewById(R.id.rv);
+        loadPulse = currentView.findViewById(R.id.spin_kit);
 
         mySwipeRefreshView = (SwipeRefreshLayout) currentView.findViewById(R.id.refresh);
-        mySwipeRefreshView.setColorSchemeColors(getResources().getColor(R.color.dark_pink, getContext().getTheme()),
-                getResources().getColor(R.color.pink, getContext().getTheme()),
+        mySwipeRefreshView.setColorSchemeColors(getResources().getColor(R.color.pink, getContext().getTheme()),
+                getResources().getColor(R.color.dark_pink, getContext().getTheme()),
                 getResources().getColor(R.color.purple_200, getContext().getTheme()));
         mySwipeRefreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -100,7 +120,7 @@ public class DiscoverFragment extends Fragment {
                     @Override
                     public void run() {
                         super.run();
-                        getNewsList();
+                        getNewsList(DiscoverFragment.State.DROP_AND_REFRESH);
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -115,12 +135,30 @@ public class DiscoverFragment extends Fragment {
 
         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
         result.setLayoutManager(myLayoutManager);
-        result.setAdapter(new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager));
+        myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager);
+        result.setAdapter(myDiscoverAdapter);
+        result.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    Toast.makeText(context, "Discovering more news...", Toast.LENGTH_SHORT).show();
+                    loadPulse.setVisibility(View.VISIBLE);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            getNewsList(DiscoverFragment.State.SCROLL_AND_LOAD);
+                        }
+                    }.start();
+                }
+            }
+        });
 
         return currentView;
     }
 
-    private void getNewsList() {
+    private void getNewsList(State state) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String today = simpleDateFormat.format(date);
@@ -137,7 +175,17 @@ public class DiscoverFragment extends Fragment {
             InputStream inputStream = conn.getInputStream();
             s = readFromStream(inputStream);
             Message msg = new Message();
+            Bundle bundle = new Bundle();
+            switch(state) {
+                case DROP_AND_REFRESH:
+                    bundle.putInt("state", 0);
+                    break;
+                case SCROLL_AND_LOAD:
+                    bundle.putInt("state", 1);
+                    break;
+            }
             msg.obj = s;
+            msg.setData(bundle);
             myHandler.sendMessage(msg);
 
         } catch (Exception e) {
