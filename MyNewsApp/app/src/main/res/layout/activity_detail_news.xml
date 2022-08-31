@@ -8,14 +8,32 @@
 
         <ImageView
             android:id="@+id/image_detail"
+            android:adjustViewBounds="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="150dp"
+            android:maxHeight="200dp"
             android:src="@mipmap/biden"
             android:layout_margin="10dp"
             android:layout_marginTop="15dp"
             android:visibility="gone"
             android:layout_gravity="center_horizontal|top"/>
+
+        <HorizontalScrollView
+            android:id="@+id/horizontal_scroll_view_detail"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/image_horizontal_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
 
         <TextView
             android:id="@+id/title_detail"
