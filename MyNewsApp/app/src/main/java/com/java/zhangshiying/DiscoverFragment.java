@@ -34,6 +34,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class DiscoverFragment extends Fragment {
+
+    int condition = 0; //状态参数为“0”表示“discover”， 状态参数为“1”表示“search”
+    private ArrayList<String> urlsFromSearch;
+
     private ArrayList<News> newsList;
     private Context context;
     private SwipeRefreshLayout mySwipeRefreshView;
@@ -95,10 +99,12 @@ public class DiscoverFragment extends Fragment {
 
     public DiscoverFragment() {}
 
-    public DiscoverFragment(ArrayList<News> newsList, MainActivity activity, int pageSize) {
-        this.newsList = newsList;
+    public DiscoverFragment(ArrayList<News> newsList, MainActivity activity, int pageSize, int condition, ArrayList<String> urls) {
+        this.newsList = (ArrayList<News>) newsList.clone();
+        this.urlsFromSearch = (ArrayList<String>) urls.clone();
         this.context = activity;
         this.pageSize = pageSize;
+        this.condition = condition;
     }
 
     @Override
@@ -160,38 +166,45 @@ public class DiscoverFragment extends Fragment {
     }
 
     private void getNewsList(State state) {
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String today = simpleDateFormat.format(date);
+        if (condition == 0) {
+            Date date = new Date(System.currentTimeMillis());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String today = simpleDateFormat.format(date);
 
-        String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=&page=%d";
-        myUrl = String.format(myUrl, pageSize, today, ++currentPage);
-        System.out.println(myUrl);
-        String s = "";
-        try {
-            URL url  = new URL(myUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setConnectTimeout(5000);
-            InputStream inputStream = conn.getInputStream();
-            s = readFromStream(inputStream);
-            Message msg = new Message();
-            Bundle bundle = new Bundle();
-            switch(state) {
-                case DROP_AND_REFRESH:
-                    bundle.putInt("state", 0);
-                    break;
-                case SCROLL_AND_LOAD:
-                    bundle.putInt("state", 1);
-                    break;
+            String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=&page=%d";
+            myUrl = String.format(myUrl, pageSize, today, ++currentPage);
+            System.out.println(myUrl);
+            String s = "";
+            try {
+                URL url  = new URL(myUrl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(5000);
+                InputStream inputStream = conn.getInputStream();
+                s = readFromStream(inputStream);
+                Message msg = new Message();
+                Bundle bundle = new Bundle();
+                switch(state) {
+                    case DROP_AND_REFRESH:
+                        bundle.putInt("state", 0);
+                        break;
+                    case SCROLL_AND_LOAD:
+                        bundle.putInt("state", 1);
+                        break;
+                }
+                msg.obj = s;
+                msg.setData(bundle);
+                myHandler.sendMessage(msg);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            msg.obj = s;
-            msg.setData(bundle);
-            myHandler.sendMessage(msg);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        else if (condition == 1) {
+            //do something
+        }
+
     }
 
     private String readFromStream(InputStream inStream) {

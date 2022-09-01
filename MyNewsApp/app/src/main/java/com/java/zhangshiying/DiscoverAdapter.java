@@ -118,6 +118,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         this.newsList = newsList;
         this.fragmentContext = fragment;
         this.myLayoutManager = myLayoutManager;
+        System.out.println("DiscoverAdapter created! newsList = " + newsList);
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {

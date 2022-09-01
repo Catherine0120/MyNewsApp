@@ -1,5 +1,7 @@
 package com.java.zhangshiying;
 
+import static java.lang.Math.min;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
 
     static final int pageSize = 20;
 
+    ArrayList<News> tmpNewsDescriptionList = new ArrayList<>();
+    ArrayList<String> urls = new ArrayList<>();
+    int tmpCount = 0;
+
     private class MainHandler extends Handler {
         private final WeakReference<MainActivity> myParent;
         public MainHandler(MainActivity activity) {
@@ -47,24 +53,53 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void handleMessage(@NonNull Message msg) {
-            String message = msg.obj.toString();
-            try {
-                JSONObject obj = new JSONObject(message);
-//                int pagesize = Integer.parseInt(obj.getString("pageSize"));
-//                int total = obj.getInt("total");
-                JSONArray newsDescriptions = obj.getJSONArray("data");
-                ArrayList<News> newsDescriptionList = new ArrayList<>();
-                for (int i = 0; i < newsDescriptions.length(); ++i) {
-                    JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
-                    newsDescriptionList.add(new News(singleNewsDescription));
-                }
-                discoverFragment = new DiscoverFragment(newsDescriptionList, MainActivity.this, pageSize);
-                loadPulse.setVisibility(View.INVISIBLE);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
+            switch(msg.what) {
+                case 1: //navigation-switch-to-discoverFragment
+                    String message = msg.obj.toString();
+                    try {
+                        JSONObject obj = new JSONObject(message);
+                        JSONArray newsDescriptions = obj.getJSONArray("data");
+                        ArrayList<News> newsDescriptionList = new ArrayList<>();
+                        for (int i = 0; i < newsDescriptions.length(); ++i) {
+                            JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
+                            newsDescriptionList.add(new News(singleNewsDescription));
+                        }
+                        discoverFragment = new DiscoverFragment(newsDescriptionList, MainActivity.this, pageSize, 0, null);
+                        loadPulse.setVisibility(View.INVISIBLE);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case 2: //searchFragment-switch-to-discoverFragment
+                    tmpCount++;
+                    String message_case_2 = msg.obj.toString();
+                    int total = msg.getData().getInt("total");
+                    String url = msg.getData().getString("url");
+                    urls.add(url);
+                    try {
+                        JSONObject obj = new JSONObject(message_case_2);
+                        JSONArray newsDescriptions = obj.getJSONArray("data");
+                        for (int i = 0; i < newsDescriptions.length(); ++i) {
+                            JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
+                            tmpNewsDescriptionList.add(new News(singleNewsDescription));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (total == tmpCount) {
+                        discoverFragment = new DiscoverFragment(tmpNewsDescriptionList, MainActivity.this, min(tmpNewsDescriptionList.size(), 20), 1, urls);
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
+                        tmpNewsDescriptionList.clear();
+                        tmpCount = 0;
+                        urls.clear();
+                    }
+                    break;
+                default:
+                    break;
             }
+
         }
     }
 
@@ -83,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         myBottomAppBar = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(myBottomAppBar);
 
-        SearchFragment searchFragment = new SearchFragment();
+        SearchFragment searchFragment = new SearchFragment(pageSize);
         FavoritesFragment favoritesFragment = new FavoritesFragment();
 
         myFloatingActionButton = findViewById(R.id.search_action_button);
@@ -142,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
                     s = readFromStream(inputStream);
                     Message msg = new Message();
                     msg.obj = s;
+                    msg.what = 1;
                     myHandler.sendMessage(msg);
 
                 } catch (Exception e) {
@@ -151,13 +187,45 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
+    public void getSearchFragment(String myUrl, int total) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println(myUrl);
+                String s = "";
+                try {
+                    URL url  = new URL(myUrl);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setConnectTimeout(5000);
+                    InputStream inputStream = conn.getInputStream();
+                    s = MainActivity.readFromStream(inputStream);
+                    System.out.println("[" + myUrl + "]: " + s);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("total", total);
+                    bundle.putString("url", myUrl);
+                    Message msg = new Message();
+                    msg.setData(bundle);
+                    msg.obj = s;
+                    msg.what = 2;
+                    myHandler.sendMessage(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+
+
+
     @Override
     public boolean onCreateOptionsMenu (Menu menu) {
         super.onCreateOptionsMenu(menu);
         return true;
     }
 
-    private String readFromStream(InputStream inStream) {
+    public static String readFromStream(InputStream inStream) {
         String s = "";
         try {
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -174,4 +242,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return s;
     }
+
+
 }

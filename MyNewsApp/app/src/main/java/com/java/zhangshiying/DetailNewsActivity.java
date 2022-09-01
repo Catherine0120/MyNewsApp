@@ -126,8 +126,6 @@ public class DetailNewsActivity extends AppCompatActivity {
                     bundle.putBoolean("multiImages", multiImages);
                     msg.setData(bundle);
                     msg.obj = new Object[] {myBitmap, view, img};
-                    System.out.println((Bitmap)((Object[]) msg.obj)[0]);
-                    System.out.println(myBitmap + " " + view + " " + img);
                     msg.what = 1;
                     myHandler.sendMessage(msg);
 
