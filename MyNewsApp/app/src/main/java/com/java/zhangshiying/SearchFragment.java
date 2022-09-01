@@ -91,14 +91,15 @@ public class SearchFragment extends Fragment {
                 for (Map.Entry<String, EditText> entry : textMap.entrySet()) {
                     params.add(entry.getKey() + "=" + entry.getValue().getText().toString());
                 }
-                myUrl = String.format(myUrl, pageSize * 4 / categories.size());
+                myUrl = String.format(myUrl, pageSize * 2 / categories.size());
                 myUrl = myUrl + "&" + TextUtils.join("&", params);
                 for (String category : categories) {
                     String tmpUrl = myUrl + "&categories=" + category;
-                    loadSearch.setVisibility(View.VISIBLE);
+//                    loadSearch.setVisibility(View.VISIBLE);
                     ((MainActivity) getActivity()).getSearchFragment(tmpUrl, categories.size());
                 }
-                loadSearch.setVisibility(View.INVISIBLE);
+                myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d";
+//                loadSearch.setVisibility(View.INVISIBLE);
             }
         });
 

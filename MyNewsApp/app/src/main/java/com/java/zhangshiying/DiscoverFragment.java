@@ -1,24 +1,21 @@
 package com.java.zhangshiying;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -37,6 +34,8 @@ public class DiscoverFragment extends Fragment {
 
     int condition = 0; //状态参数为“0”表示“discover”， 状态参数为“1”表示“search”
     private ArrayList<String> urlsFromSearch;
+    private ArrayList<News> tmpNewsList = new ArrayList<>();
+    int tmpCount = 0;
 
     private ArrayList<News> newsList;
     private Context context;
@@ -74,14 +73,30 @@ public class DiscoverFragment extends Fragment {
                 }
                 newsList = newsDescriptionList;
 
-
-                if (msg.getData().getInt("state") == 0) {
-                    LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
-                    result.setLayoutManager(myLayoutManager);
-                    myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager);
-                    result.setAdapter(myDiscoverAdapter);
+                if (msg.getData().getInt("state") == 0) { //DROP_AND_REFRESH
+                    if (condition == 0) { //discover
+                        LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
+                        result.setLayoutManager(myLayoutManager);
+                        myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager);
+                        result.setAdapter(myDiscoverAdapter);
+                    }
+                    else { //search
+                        tmpCount++;
+                        System.out.println("[tmpCount] = " + tmpCount);
+                        tmpNewsList.addAll(newsDescriptionList);
+                        System.out.println("[tmpNewsList] = " + tmpNewsList);
+                        if (tmpCount == urlsFromSearch.size()) {
+                            System.out.println("IT'S TIME!");
+                            LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
+                            result.setLayoutManager(myLayoutManager);
+                            myDiscoverAdapter = new DiscoverAdapter(tmpNewsList, context, DiscoverFragment.this, myLayoutManager);
+                            result.setAdapter(myDiscoverAdapter);
+                            tmpCount = 0;
+                            tmpNewsList.clear();
+                        }
+                    }
                 }
-                else {
+                else { //SCROLL_AND_LOAD
                     assert(myDiscoverAdapter != null);
                     myDiscoverAdapter.addNewsList(newsList);
                     loadPulse.setVisibility(View.INVISIBLE);
@@ -101,7 +116,7 @@ public class DiscoverFragment extends Fragment {
 
     public DiscoverFragment(ArrayList<News> newsList, MainActivity activity, int pageSize, int condition, ArrayList<String> urls) {
         this.newsList = (ArrayList<News>) newsList.clone();
-        this.urlsFromSearch = (ArrayList<String>) urls.clone();
+        if (urls != null) this.urlsFromSearch = (ArrayList<String>) urls.clone();
         this.context = activity;
         this.pageSize = pageSize;
         this.condition = condition;
@@ -141,6 +156,7 @@ public class DiscoverFragment extends Fragment {
 
         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
         result.setLayoutManager(myLayoutManager);
+        System.out.println("[DiscoverFragment.onCreateView => DiscoverAdapter]: newsList=" + newsList);
         myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager);
         result.setAdapter(myDiscoverAdapter);
         result.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -202,7 +218,45 @@ public class DiscoverFragment extends Fragment {
         }
 
         else if (condition == 1) {
-            //do something
+            String s = "";
+            String tmpUrl = "";
+            for (int i = 0; i < urlsFromSearch.size(); ++i) {
+                String str = urlsFromSearch.get(i);
+                if (getQueryString(str, "page") == null) {
+                    tmpUrl = str + "&page=2";
+                    urlsFromSearch.set(i, str + "&page=2");
+                }
+                else {
+                    int currentPage = Integer.parseInt(getQueryString(str, "page"));
+                    tmpUrl = replace(str, "page", Integer.toString(++currentPage));
+                    urlsFromSearch.set(i, tmpUrl);
+                }
+                System.out.println("[SearchFragment]" + tmpUrl);
+                try {
+                    URL url  = new URL(tmpUrl);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+                    conn.setConnectTimeout(5000);
+                    InputStream inputStream = conn.getInputStream();
+                    s = readFromStream(inputStream);
+                    Message msg = new Message();
+                    Bundle bundle = new Bundle();
+                    switch(state) {
+                        case DROP_AND_REFRESH:
+                            bundle.putInt("state", 0);
+                            break;
+                        case SCROLL_AND_LOAD:
+                            bundle.putInt("state", 1);
+                            break;
+                    }
+                    msg.obj = s;
+                    msg.setData(bundle);
+                    myHandler.sendMessage(msg);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
     }
@@ -225,4 +279,20 @@ public class DiscoverFragment extends Fragment {
         return s;
     }
 
+    public static String getQueryString (String url, String tag) {
+        try {
+            Uri uri = Uri.parse(url);
+            return uri.getQueryParameter(tag);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String replace (String url, String key, String value) {
+        if (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(key)) {
+            url = url.replaceAll("(" + key + "=[^&]*)", key + "=" + value);
+        }
+        return url;
+    }
 }

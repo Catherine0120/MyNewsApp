@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
                             newsDescriptionList.add(new News(singleNewsDescription));
                         }
+                        System.out.println("[MainActivity.FirstCreate => DiscoverFragment]" + newsDescriptionList);
                         discoverFragment = new DiscoverFragment(newsDescriptionList, MainActivity.this, pageSize, 0, null);
                         loadPulse.setVisibility(View.INVISIBLE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     if (total == tmpCount) {
+                        if (tmpNewsDescriptionList.size() == 0) Toast.makeText(MainActivity.this, "Sorry, no result matches your search...", Toast.LENGTH_LONG).show();
                         discoverFragment = new DiscoverFragment(tmpNewsDescriptionList, MainActivity.this, min(tmpNewsDescriptionList.size(), 20), 1, urls);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
                         tmpNewsDescriptionList.clear();
@@ -126,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment, searchFragment).commit();
+                myBottomNavigationView.getMenu().getItem(1).setChecked(true); //blank_item
+
             }
         });
 
@@ -175,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                     conn.setConnectTimeout(5000);
                     InputStream inputStream = conn.getInputStream();
                     s = readFromStream(inputStream);
+                    System.out.println("[MainActivity.crawl]: s = " + s);
                     Message msg = new Message();
                     msg.obj = s;
                     msg.what = 1;

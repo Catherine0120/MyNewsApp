@@ -37,7 +37,7 @@ import java.util.HashMap;
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyViewHolder> {
     Context context;
     Context myContext;
-    ArrayList<News> newsList;
+    ArrayList<News> newsList = null;
     Fragment fragmentContext;
     View view;
     LinearLayoutManager myLayoutManager;
@@ -115,10 +115,10 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
 
     public DiscoverAdapter(ArrayList<News> newsList, Context context, Fragment fragment, LinearLayoutManager myLayoutManager) {
         this.context = context;
-        this.newsList = newsList;
+        if (newsList != null) this.newsList = (ArrayList<News>) newsList.clone();
         this.fragmentContext = fragment;
         this.myLayoutManager = myLayoutManager;
-        System.out.println("DiscoverAdapter created! newsList = " + newsList);
+        System.out.println("[DiscoverAdapter constructor]: newsList = " + newsList);
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
