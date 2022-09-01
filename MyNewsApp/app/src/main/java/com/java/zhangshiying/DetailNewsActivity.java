@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.GsonBuilder;
+import com.sackcentury.shinebuttonlib.ShineButton;
 
 import org.w3c.dom.Text;
 
@@ -29,10 +30,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class DetailNewsActivity extends AppCompatActivity {
+
+    boolean firstRead = true;
+
     News news;
     ImageView topImageView;
     HorizontalScrollView topImagesScrollView;
     LinearLayout myLinearLayout;
+
+    ShineButton likeButton, favButton;
 
     private class DetailHandler extends Handler {
         private final WeakReference<DetailNewsActivity> myAcitivity;
@@ -72,6 +78,8 @@ public class DetailNewsActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_news);
+        if (firstRead) FavoritesFragment.historyNewsList.add(news);
+        firstRead = false;
 
         news = new GsonBuilder().create().fromJson(this.getIntent().getStringExtra("news"), News.class);
 
@@ -85,6 +93,16 @@ public class DetailNewsActivity extends AppCompatActivity {
         timeDetail.setText(news.time);
         TextView contentDetail = (TextView) findViewById(R.id.content_detail);
         contentDetail.setText(news.content);
+
+        likeButton = findViewById(R.id.shineBtn_like);
+        favButton = findViewById(R.id.shineBtn_favorites);
+
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FavoritesFragment.favNewsList.add(news);
+            }
+        });
 
         if (news.imageExist) {
             if (news.imageCount == 1) {

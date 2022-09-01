@@ -11,6 +11,8 @@
 
 `[Log 2022/9/1 18:40]`：实现`SearchFragment (本质上是activity)`
 
+`[Log 2022/9/1 21:18]`：完成`FavoritesFragment`基本策划
+
 
 
 -----------

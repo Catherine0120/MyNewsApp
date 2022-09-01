@@ -41,5 +41,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'com.github.mancj:MaterialSearchBar:0.8.5'
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+    implementation 'com.sackcentury:shinebutton:1.0.0'
 
 }

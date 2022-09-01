@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="10dp"
     android:orientation="vertical">
 
@@ -95,19 +95,76 @@
         android:id="@+id/scroll_view_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
         android:scrollbars="vertical">
 
-        <TextView
-            android:id="@+id/content_detail"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:fontFamily="@font/dengxian"
-            android:lineSpacingExtra="10dp"
-            android:textSize="16sp"
-            android:paddingTop="10dp"
-            android:text="【拜登签署实施芯片法行政令 中方此前已明确表示坚决反对】财联社8月26日电，美国总统拜登当地时间8月25日签署一项旨在实施《2022年芯片和科学法案》的行政命令。关于该法案，中国外交部、商务部此前已明确表示，中方坚决反对扰乱国际贸易。根据白宫网站，拜登25日签署的行政令设置了实施《芯片和科学法案》的6个优先事项，还设立了一个由16人组成的跨部门指导委员会，由美国总统国家安全事务助理沙利文等3人共同担任主席，其他成员包括美国国务卿布林肯、财长耶伦、防长奥斯汀以及商务部长雷蒙多等。" />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/content_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:fontFamily="@font/dengxian"
+                android:lineSpacingExtra="10dp"
+                android:textSize="16sp"
+                android:paddingTop="10dp"
+                android:text="【拜登签署实施芯片法行政令 中方此前已明确表示坚决反对】财联社8月26日电，美国总统拜登当地时间8月25日签署一项旨在实施《2022年芯片和科学法案》的行政命令。关于该法案，中国外交部、商务部此前已明确表示，中方坚决反对扰乱国际贸易。根据白宫网站，拜登25日签署的行政令设置了实施《芯片和科学法案》的6个优先事项，还设立了一个由16人组成的跨部门指导委员会，由美国总统国家安全事务助理沙利文等3人共同担任主席，其他成员包括美国国务卿布林肯、财长耶伦、防长奥斯汀以及商务部长雷蒙多等。" />
+
+            <GridLayout
+                android:id="@+id/shineBtns"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:orientation="horizontal">
+
+                <com.sackcentury.shinebuttonlib.ShineButton
+                    android:id="@+id/shineBtn_like"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="4"
+                    android:layout_gravity="right"
+                    android:src="@android:color/darker_gray"
+                    app:btn_color="@android:color/darker_gray"
+                    app:btn_fill_color="@color/pink"
+                    app:big_shine_color="@color/dark_pink"
+                    app:allow_random_color="false"
+                    app:small_shine_color="#CC9999"
+                    app:siShape="@raw/like"/>
+
+                <ImageView
+                    android:layout_columnWeight="1"
+                    android:layout_height="wrap_content"/>
+
+                <com.sackcentury.shinebuttonlib.ShineButton
+                    android:id="@+id/shineBtn_favorites"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="4"
+                    android:layout_gravity="left"
+                    android:src="@android:color/darker_gray"
+                    app:btn_color="@android:color/darker_gray"
+                    app:btn_fill_color="#FBF191"
+                    app:big_shine_color="#E4AC58"
+                    app:allow_random_color="false"
+                    app:small_shine_color="#CC9999"
+                    app:siShape="@raw/star"/>
+
+
+            </GridLayout>
+
+
+
+        </LinearLayout>
+
+
 
     </androidx.core.widget.NestedScrollView>
+
+
+
 
 </LinearLayout>

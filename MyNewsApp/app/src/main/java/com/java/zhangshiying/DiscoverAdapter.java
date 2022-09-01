@@ -125,6 +125,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         TextView title, category, origin, time;
         ImageView image;
         VideoView video;
+        ImageView closeBtn;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -134,6 +135,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             time = itemView.findViewById(R.id.textTime);
             image = itemView.findViewById(R.id.image);
             video = itemView.findViewById(R.id.video);
+            closeBtn = itemView.findViewById(R.id.close_btn);
         }
     }
 
@@ -154,6 +156,13 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         holder.category.setText(news.category);
         holder.origin.setText(news.origin);
         holder.time.setText(news.time);
+        holder.closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                removeData(pos);
+            }
+        });
+
         if (news.imageExist) {
             boolean twoImages = false;
             if (news.imageCount >= 2) {
@@ -305,4 +314,9 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         notifyDataSetChanged();
     }
 
+    public void removeData(int position) {
+        newsList.remove(position);
+        notifyItemRemoved(position);
+        notifyDataSetChanged();
+    }
 }
