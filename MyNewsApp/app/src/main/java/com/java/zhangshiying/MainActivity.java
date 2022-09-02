@@ -5,6 +5,8 @@ import static java.lang.Math.min;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -29,6 +31,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 /* local storage (shared preference)
 1. DiscoverFragment currentPage
@@ -42,14 +45,20 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView myBottomNavigationView;
     private FloatingActionButton myFloatingActionButton;
 
-    DiscoverFragment discoverFragment;
+    public static int currentPage = 1;
+
+    public DiscoverFragment discoverFragment;
+    public SearchFragment searchFragment;
+    public FavoritesFragment favoritesFragment;
     private View loadPulse;
 
     static final int pageSize = 20;
+    boolean firstLoad = true;
 
     ArrayList<News> tmpNewsDescriptionList = new ArrayList<>();
     ArrayList<String> urls = new ArrayList<>();
     int tmpCount = 0;
+    String today = "";
 
     private class MainHandler extends Handler {
         private final WeakReference<MainActivity> myParent;
@@ -119,15 +128,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getDiscoverFragment(true);
+
+        initApplication();
+
+        getDiscoverFragment();
 
         loadPulse = findViewById(R.id.spin_kit_main);
 
         myBottomAppBar = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(myBottomAppBar);
 
-        SearchFragment searchFragment = new SearchFragment(pageSize);
-        FavoritesFragment favoritesFragment = new FavoritesFragment();
+        searchFragment = new SearchFragment(pageSize);
+        favoritesFragment = new FavoritesFragment();
+
+        initFavorites();
 
         myFloatingActionButton = findViewById(R.id.search_action_button);
         myFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -148,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.menu_discover_news:
                         loadPulse.bringToFront();
                         loadPulse.setVisibility(View.VISIBLE);
-                        getDiscoverFragment(false);
+                        getDiscoverFragment();
                         return true;
 
                     case R.id.menu_favorites:
@@ -161,10 +175,32 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void getDiscoverFragment(boolean firstLoad) {
+    private void initFavorites() {
+        String _msg = Storage.findValue(getApplicationContext(), "historyNewsList");
+        if (!Objects.equals(_msg, "")) favoritesFragment.historyNewsList = Storage.parseNewsList(_msg);
+        String _msg2 = Storage.findValue(getApplicationContext(), "favoritesNewsList");
+        if (!Objects.equals(_msg2, "")) favoritesFragment.favNewsList = Storage.parseNewsList(_msg2);
+    }
+
+    private void initApplication() {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String today = simpleDateFormat.format(date);
+        today = simpleDateFormat.format(date);
+
+        String originMsg = Storage.findValue(getApplicationContext(), "currentDiscoverPage");
+        if (!Objects.equals(originMsg, "")) {
+            String[] _msg = Storage.getValues(originMsg);
+            assert(_msg.length == 2);
+            String _currentPage = _msg[0];
+            String _today = _msg[1];
+            if (Objects.equals(today, _today)) {
+                currentPage = Integer.parseInt(_currentPage);
+                firstLoad = false;
+            }
+        }
+    }
+
+    private void getDiscoverFragment() {
 
         new Thread(new Runnable() {
             @Override
@@ -173,9 +209,11 @@ public class MainActivity extends AppCompatActivity {
                 if (firstLoad) myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=";
                 else {
                     myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=&page=%d";
-                    discoverFragment.currentPage++;
+                    currentPage++;
                 }
-                myUrl = String.format(myUrl, pageSize, today, discoverFragment.currentPage);
+                firstLoad = false;
+                Storage.write(getApplicationContext(), "currentDiscoverPage", currentPage + "&&&" + today);
+                myUrl = String.format(myUrl, pageSize, today, currentPage);
                 System.out.println(myUrl);
                 String s = "";
                 try {

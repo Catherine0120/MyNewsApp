@@ -121,6 +121,7 @@ public class DetailNewsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
                 if (checked && !news.fav) FavoritesFragment.favNewsList.add(news);
+                Storage.write(getApplicationContext(), "favoritesNewsList", Storage.joinNewsList(FavoritesFragment.favNewsList));
                 news.fav = checked;
                 resultMsg += fromPos + ",fav,";
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));

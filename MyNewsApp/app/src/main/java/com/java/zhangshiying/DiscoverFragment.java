@@ -55,7 +55,6 @@ public class DiscoverFragment extends Fragment {
     private DiscoverAdapter myDiscoverAdapter;
 
     private int pageSize;
-    static public int currentPage = 1;
 
     public enum State {
         DROP_AND_REFRESH, SCROLL_AND_LOAD
@@ -232,13 +231,14 @@ public class DiscoverFragment extends Fragment {
     }
 
     private void getNewsList(State state) {
-        if (condition == 0) {
-            Date date = new Date(System.currentTimeMillis());
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String today = simpleDateFormat.format(date);
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String today = simpleDateFormat.format(date);
 
+        if (condition == 0) {
             String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=&page=%d";
-            myUrl = String.format(myUrl, pageSize, today, ++currentPage);
+            myUrl = String.format(myUrl, pageSize, today, ++MainActivity.currentPage);
+            Storage.write(context.getApplicationContext(), "currentDiscoverPage", MainActivity.currentPage + "&&&" + today);
             System.out.println(myUrl);
             String s = "";
             try {
