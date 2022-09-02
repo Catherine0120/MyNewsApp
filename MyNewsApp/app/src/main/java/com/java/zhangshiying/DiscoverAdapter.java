@@ -189,6 +189,10 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             public void onClick(View view) {
                 News news = newsList.get(pos);
                 news.pos = pos;
+                if (!news.read) {
+                    news.read = true;
+                    FavoritesFragment.historyNewsList.add(news);
+                }
                 System.out.println("[DiscoverAdapter]: news = " + news);
                 Gson gson = new Gson();
                 String send = gson.toJson(news);
@@ -196,9 +200,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             }
         });
     }
-
-
-
 
 
 

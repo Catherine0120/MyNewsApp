@@ -86,7 +86,6 @@ public class DetailNewsActivity extends AppCompatActivity {
 
         news = new GsonBuilder().create().fromJson(this.getIntent().getStringExtra("news"), News.class);
         System.out.println("[DetailNewsActivity]: news = " + news);
-//        if (!news.read) FavoritesFragment.historyNewsList.add(news);
 
         TextView titleDetail = (TextView) findViewById(R.id.title_detail);
         titleDetail.setText(news.title);
@@ -104,7 +103,6 @@ public class DetailNewsActivity extends AppCompatActivity {
 
         if (news.like) likeButton.setChecked(true);
         if (news.fav) favButton.setChecked(true);
-        System.out.println("[like/fav]: " + news.like + news.fav);
 
         fromPos = news.pos;
         assert (fromPos != -1);
@@ -114,7 +112,6 @@ public class DetailNewsActivity extends AppCompatActivity {
         likeButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
-                FavoritesFragment.historyNewsList.add(news);
                 news.like = checked;
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
             }

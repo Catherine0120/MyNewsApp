@@ -13,7 +13,7 @@
 
 `[Log 2022/9/1 21:18]`：完成`FavoritesFragment`基本策划
 
-`[Lig 2022/9/2 14:34]`：实现点赞/收藏功能，待完善部分基本只剩下本地存储
+`[Lig 2022/9/2 15:52]`：实现点赞/收藏功能，待完善部分基本只剩下本地存储
 
 
 
@@ -25,3 +25,4 @@
 2. 图片加载问题：`java.net.MalFormedURLException: no protocol`，`D/skia:---Failed to create image decoder with message 'unimplemented'`， `gif`动图之间的`[`&`]`格式问题
 3. 视频播放
 3. ~~`detailed page`中图片过大问题~~
+3. 整体配色考虑？（蓝绿灰色系 or 加粉紫灰色系）

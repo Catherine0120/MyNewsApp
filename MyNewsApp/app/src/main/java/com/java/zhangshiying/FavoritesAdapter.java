@@ -1,6 +1,7 @@
 package com.java.zhangshiying;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -8,9 +9,12 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
 
@@ -21,6 +25,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     Fragment myFragment;
     LinearLayoutManager myLayoutManager;
     View view;
+
+    int color; //0=blue, 1=pink
 
 
     @NonNull
@@ -35,6 +41,16 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         final int pos = position;
         holder.setIsRecyclable(false);
         News news = newsListDisplay.get(position);
+        if (color == 0) {
+            holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_teal));
+            holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_teal)));
+            holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.teal_700)));
+        }
+        else {
+            holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_grey));
+            holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_grey)));
+            holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_grey)));
+        }
         holder.title.setText(news.title);
         holder.category.setText(news.category);
         holder.origin.setText(news.origin);
@@ -54,11 +70,12 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         return newsListDisplay == null ? 0 : newsListDisplay.size();
     }
 
-    public FavoritesAdapter(ArrayList<News> favNewsList, Context activity, Fragment fragment, LinearLayoutManager myLayoutManager) {
+    public FavoritesAdapter(ArrayList<News> favNewsList, Context activity, Fragment fragment, LinearLayoutManager myLayoutManager, int color) {
         newsListDisplay = favNewsList;
         context = activity;
         myFragment = fragment;
         this.myLayoutManager = myLayoutManager;
+        this.color = color;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -66,9 +83,11 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         ImageView image;
         VideoView video;
         ImageView closeBtn;
+        MaterialCardView card;
 
         public MyViewHolder(View itemView) {
             super(itemView);
+            card = itemView.findViewById(R.id.materialCardView);
             title = itemView.findViewById(R.id.textTitle);
             category = itemView.findViewById(R.id.textCategory);
             origin = itemView.findViewById(R.id.textOrigin);

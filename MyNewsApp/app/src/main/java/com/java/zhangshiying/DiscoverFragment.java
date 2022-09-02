@@ -192,7 +192,6 @@ public class DiscoverFragment extends Fragment {
     ActivityResultLauncher<String> launcher = registerForActivityResult(new ResultContract(), new ActivityResultCallback<String>() {
         @Override
         public void onActivityResult(String result) {
-            System.out.println("[result] = " + result);
             String[] message = result.split(",");
             int pos = Integer.parseInt(message[0]);
             if (message.length == 3) {

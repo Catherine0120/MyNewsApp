@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            app:SpinKit_Color="#B0ECBCE9"
+            app:SpinKit_Color="@color/pink"
             android:layout_margin="120dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
