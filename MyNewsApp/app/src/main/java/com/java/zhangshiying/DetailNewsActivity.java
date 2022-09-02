@@ -120,7 +120,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         favButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
-                FavoritesFragment.favNewsList.add(news);
+                if (checked && !news.fav) FavoritesFragment.favNewsList.add(news);
                 news.fav = checked;
                 resultMsg += fromPos + ",fav,";
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));

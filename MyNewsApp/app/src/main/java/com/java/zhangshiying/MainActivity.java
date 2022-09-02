@@ -30,6 +30,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/* local storage (shared preference)
+1. DiscoverFragment currentPage
+2. historyNewsList, favNewsList
+ */
+
+
 public class MainActivity extends AppCompatActivity {
 
     private BottomAppBar myBottomAppBar;

@@ -78,13 +78,13 @@ public class DiscoverFragment extends Fragment {
                     JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
                     newsDescriptionList.add(new News(singleNewsDescription));
                 }
-                newsList = newsDescriptionList;
+                newsList.addAll(newsDescriptionList);
 
                 if (msg.getData().getInt("state") == 0) { //DROP_AND_REFRESH
                     if (condition == 0) { //discover
                         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
                         result.setLayoutManager(myLayoutManager);
-                        myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager, launcher);
+                        myDiscoverAdapter = new DiscoverAdapter(newsDescriptionList, context, DiscoverFragment.this, myLayoutManager, launcher);
                         result.setAdapter(myDiscoverAdapter);
                     }
                     else { //search
@@ -105,7 +105,7 @@ public class DiscoverFragment extends Fragment {
                 }
                 else { //SCROLL_AND_LOAD
                     assert(myDiscoverAdapter != null);
-                    myDiscoverAdapter.addNewsList(newsList);
+                    myDiscoverAdapter.addNewsList(newsDescriptionList);
                     loadPulse.setVisibility(View.INVISIBLE);
                 }
 

@@ -2,6 +2,7 @@ package com.java.zhangshiying;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -24,11 +25,13 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -45,7 +48,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     Context mainActivityContext;
     Fragment fragmentContext;
     LinearLayoutManager myLayoutManager;
-    ActivityResultLauncher launcher;
+    private ActivityResultLauncher launcher;
 
     ArrayList<News> newsList = null;
     View view;
@@ -135,9 +138,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         ImageView image;
         VideoView video;
         ImageView closeBtn;
+        MaterialCardView card;
 
         public MyViewHolder(View itemView) {
             super(itemView);
+            card = itemView.findViewById(R.id.materialCardView);
             title = itemView.findViewById(R.id.textTitle);
             category = itemView.findViewById(R.id.textCategory);
             origin = itemView.findViewById(R.id.textOrigin);
@@ -160,6 +165,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         final int pos = position;
         holder.setIsRecyclable(false);
         News news = newsList.get(position);
+        if (news.read) {
+            holder.card.setStrokeColor(ContextCompat.getColor(mainActivityContext, R.color.light_grey));
+            holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.light_grey)));
+            holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.dark_grey)));
+        }
         holder.title.setText(news.title);
         holder.category.setText(news.category);
         holder.origin.setText(news.origin);
@@ -189,14 +199,17 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             public void onClick(View view) {
                 News news = newsList.get(pos);
                 news.pos = pos;
+                boolean tmpFlag = false;
                 if (!news.read) {
                     news.read = true;
                     FavoritesFragment.historyNewsList.add(news);
+                    tmpFlag = true;
                 }
-                System.out.println("[DiscoverAdapter]: news = " + news);
+                System.out.println("[DiscoverAdapter]: pos = " + pos + ", news = " + news);
                 Gson gson = new Gson();
                 String send = gson.toJson(news);
                 launcher.launch(send);
+//                if (tmpFlag) notifyDataSetChanged();
             }
         });
     }
