@@ -9,9 +9,11 @@
 
 `[Log 2022/8/31 20:20]`：实现`DetailNewsActivity`
 
-`[Log 2022/9/1 18:40]`：实现`SearchFragment (本质上是activity)`
+`[Log 2022/9/1 18:40]`：实现`SearchFragment `
 
 `[Log 2022/9/1 21:18]`：完成`FavoritesFragment`基本策划
+
+`[Lig 2022/9/2 14:34]`：实现点赞/收藏功能，待完善部分基本只剩下本地存储
 
 
 

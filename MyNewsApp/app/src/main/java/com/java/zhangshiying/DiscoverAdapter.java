@@ -15,9 +15,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -25,6 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,12 +42,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyViewHolder> {
-    Context context;
-    Context myContext;
-    ArrayList<News> newsList = null;
+    Context mainActivityContext;
     Fragment fragmentContext;
-    View view;
     LinearLayoutManager myLayoutManager;
+    ActivityResultLauncher launcher;
+
+    ArrayList<News> newsList = null;
+    View view;
 
     private class DiscoverHandler extends Handler {
         private final WeakReference<DiscoverFragment> myFragment;
@@ -113,11 +121,12 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
 
 
 
-    public DiscoverAdapter(ArrayList<News> newsList, Context context, Fragment fragment, LinearLayoutManager myLayoutManager) {
-        this.context = context;
+    public DiscoverAdapter(ArrayList<News> newsList, Context context, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher launcher) {
+        this.mainActivityContext = context;
         if (newsList != null) this.newsList = (ArrayList<News>) newsList.clone();
         this.fragmentContext = fragment;
         this.myLayoutManager = myLayoutManager;
+        this.launcher = launcher;
         System.out.println("[DiscoverAdapter constructor]: newsList = " + newsList);
     }
 
@@ -142,8 +151,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        myContext = parent.getContext();
-        view = View.inflate(context, R.layout.news_card_layout, null);
+        view = View.inflate(mainActivityContext, R.layout.news_card_layout, null);
         return new MyViewHolder(view);
     }
 
@@ -180,15 +188,19 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             @Override
             public void onClick(View view) {
                 News news = newsList.get(pos);
+                news.pos = pos;
+                System.out.println("[DiscoverAdapter]: news = " + news);
                 Gson gson = new Gson();
-                Intent intent = new Intent(myContext, DetailNewsActivity.class);
-                // what's the first parameter in "Intent()"?
-                // tried: context(Mainactivity activity), myContext((ViewGroup parent).getContext()) view.getContext(), fragmentContext.getActivity()
-                intent.putExtra("news", gson.toJson(news));
-                myContext.startActivity(intent);
+                String send = gson.toJson(news);
+                launcher.launch(send);
             }
         });
     }
+
+
+
+
+
 
 
     private void getBitmapFromURL(String src, String src2, int pos, boolean twoImages) {
@@ -297,7 +309,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     }
 
     private void castVideo (VideoView vv) {
-        MediaController mediaController = new MediaController(context);
+        MediaController mediaController = new MediaController(mainActivityContext);
         mediaController.setAnchorView(vv);
         mediaController.setMediaPlayer(vv);
         vv.setMediaController(mediaController);

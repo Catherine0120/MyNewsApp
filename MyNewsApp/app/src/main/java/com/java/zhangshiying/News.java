@@ -15,6 +15,12 @@ public class News {
     boolean videoExist = false;
     int imageCount = 0;
 
+    boolean fav = false;
+    boolean like = false;
+    boolean read = false;
+
+    int pos = -1;
+
     public String content;
 
     News(JSONObject news) {

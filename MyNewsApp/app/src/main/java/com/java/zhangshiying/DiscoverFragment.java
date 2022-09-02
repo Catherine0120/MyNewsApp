@@ -1,10 +1,15 @@
 package com.java.zhangshiying;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -30,6 +35,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 public class DiscoverFragment extends Fragment {
 
@@ -78,7 +84,7 @@ public class DiscoverFragment extends Fragment {
                     if (condition == 0) { //discover
                         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
                         result.setLayoutManager(myLayoutManager);
-                        myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager);
+                        myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager, launcher);
                         result.setAdapter(myDiscoverAdapter);
                     }
                     else { //search
@@ -90,7 +96,7 @@ public class DiscoverFragment extends Fragment {
                             System.out.println("IT'S TIME!");
                             LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
                             result.setLayoutManager(myLayoutManager);
-                            myDiscoverAdapter = new DiscoverAdapter(tmpNewsList, context, DiscoverFragment.this, myLayoutManager);
+                            myDiscoverAdapter = new DiscoverAdapter(tmpNewsList, context, DiscoverFragment.this, myLayoutManager, launcher);
                             result.setAdapter(myDiscoverAdapter);
                             tmpCount = 0;
                             tmpNewsList.clear();
@@ -158,7 +164,7 @@ public class DiscoverFragment extends Fragment {
         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
         result.setLayoutManager(myLayoutManager);
         System.out.println("[DiscoverFragment.onCreateView => DiscoverAdapter]: newsList=" + newsList);
-        myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager);
+        myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager, launcher);
         result.setAdapter(myDiscoverAdapter);
         result.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -180,6 +186,50 @@ public class DiscoverFragment extends Fragment {
         });
 
         return currentView;
+    }
+
+
+    ActivityResultLauncher<String> launcher = registerForActivityResult(new ResultContract(), new ActivityResultCallback<String>() {
+        @Override
+        public void onActivityResult(String result) {
+            System.out.println("[result] = " + result);
+            String[] message = result.split(",");
+            int pos = Integer.parseInt(message[0]);
+            if (message.length == 3) {
+                newsList.get(pos).like = true;
+                newsList.get(pos).fav = true;
+            }
+            else if (message.length == 2) {
+                if (Objects.equals(message[1], "like")) {
+                    newsList.get(pos).like = true;
+                    newsList.get(pos).fav = false;
+                }
+                if (Objects.equals(message[1], "fav")) {
+                    newsList.get(pos).like = false;
+                    newsList.get(pos).fav = true;
+                }
+            }
+            else {
+                assert(message.length == 1);
+                newsList.get(pos).like = false;
+                newsList.get(pos).fav = false;
+            }
+        }
+    });
+
+    class ResultContract extends ActivityResultContract<String, String> {
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull Context context, String input) {
+            Intent intent = new Intent(getContext(), DetailNewsActivity.class);
+            intent.putExtra("news", input);
+            return intent;
+        }
+
+        @Override
+        public String parseResult(int resultCode, @Nullable Intent intent) {
+            return intent.getStringExtra("feedback");
+        }
     }
 
     private void getNewsList(State state) {

@@ -9,11 +9,14 @@ import android.os.Message;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,14 +34,16 @@ import java.net.URL;
 
 public class DetailNewsActivity extends AppCompatActivity {
 
-    boolean firstRead = true;
-
     News news;
     ImageView topImageView;
     HorizontalScrollView topImagesScrollView;
     LinearLayout myLinearLayout;
 
     ShineButton likeButton, favButton;
+
+    int fromPos;
+    String resultMsg = "";
+
 
     private class DetailHandler extends Handler {
         private final WeakReference<DetailNewsActivity> myAcitivity;
@@ -78,10 +83,10 @@ public class DetailNewsActivity extends AppCompatActivity {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_news);
-        if (firstRead) FavoritesFragment.historyNewsList.add(news);
-        firstRead = false;
 
         news = new GsonBuilder().create().fromJson(this.getIntent().getStringExtra("news"), News.class);
+        System.out.println("[DetailNewsActivity]: news = " + news);
+//        if (!news.read) FavoritesFragment.historyNewsList.add(news);
 
         TextView titleDetail = (TextView) findViewById(R.id.title_detail);
         titleDetail.setText(news.title);
@@ -97,10 +102,31 @@ public class DetailNewsActivity extends AppCompatActivity {
         likeButton = findViewById(R.id.shineBtn_like);
         favButton = findViewById(R.id.shineBtn_favorites);
 
-        favButton.setOnClickListener(new View.OnClickListener() {
+        if (news.like) likeButton.setChecked(true);
+        if (news.fav) favButton.setChecked(true);
+        System.out.println("[like/fav]: " + news.like + news.fav);
+
+        fromPos = news.pos;
+        assert (fromPos != -1);
+
+        setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
+
+        likeButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
+            public void onCheckedChanged(View view, boolean checked) {
+                FavoritesFragment.historyNewsList.add(news);
+                news.like = checked;
+                setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
+            }
+        });
+
+        favButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(View view, boolean checked) {
                 FavoritesFragment.favNewsList.add(news);
+                news.fav = checked;
+                resultMsg += fromPos + ",fav,";
+                setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
             }
         });
 
@@ -154,5 +180,12 @@ public class DetailNewsActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    private String getResultMsg() {
+        if (news.like && news.fav) return fromPos + ",like" + ",fav";
+        else if (news.like) return fromPos + ",like";
+        else if (news.fav) return fromPos + ",fav";
+        else return Integer.toString(fromPos);
     }
 }
