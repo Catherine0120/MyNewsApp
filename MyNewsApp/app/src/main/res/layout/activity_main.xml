@@ -21,10 +21,11 @@
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"
             android:layout_width="match_parent"
-            android:layout_height="62dp"
+            android:layout_height="58dp"
             android:backgroundTint="@color/light_blue"
             android:layout_gravity="bottom"
             app:fabCradleMargin="7dp"
+            app:fabAlignmentMode="end"
             app:fabCradleRoundedCornerRadius="50dp"
             app:titleMargin="0dp">
 
@@ -39,8 +40,8 @@
                 app:itemRippleColor="@color/purple_200"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_marginRight="40dp"
-                android:layout_marginLeft="40dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginLeft="0dp"
                 android:padding="0dp"
                 android:background="@color/transparent"
                 app:elevation="0dp"

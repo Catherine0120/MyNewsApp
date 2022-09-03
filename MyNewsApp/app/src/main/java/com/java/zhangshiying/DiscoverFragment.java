@@ -83,18 +83,17 @@ public class DiscoverFragment extends Fragment {
                     if (condition == 0) { //discover
                         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
                         result.setLayoutManager(myLayoutManager);
+                        newsList = newsDescriptionList;
                         myDiscoverAdapter = new DiscoverAdapter(newsDescriptionList, context, DiscoverFragment.this, myLayoutManager, launcher);
                         result.setAdapter(myDiscoverAdapter);
                     }
                     else { //search
                         tmpCount++;
-                        System.out.println("[tmpCount] = " + tmpCount);
                         tmpNewsList.addAll(newsDescriptionList);
-                        System.out.println("[tmpNewsList] = " + tmpNewsList);
                         if (tmpCount == urlsFromSearch.size()) {
-                            System.out.println("IT'S TIME!");
                             LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
                             result.setLayoutManager(myLayoutManager);
+                            newsList = tmpNewsList;
                             myDiscoverAdapter = new DiscoverAdapter(tmpNewsList, context, DiscoverFragment.this, myLayoutManager, launcher);
                             result.setAdapter(myDiscoverAdapter);
                             tmpCount = 0;
@@ -193,11 +192,12 @@ public class DiscoverFragment extends Fragment {
         public void onActivityResult(String result) {
             String[] message = result.split(",");
             int pos = Integer.parseInt(message[0]);
-            if (message.length == 3) {
+            System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news]=" + newsList.get(pos));
+            if (message.length == 4) {
                 newsList.get(pos).like = true;
                 newsList.get(pos).fav = true;
             }
-            else if (message.length == 2) {
+            else if (message.length == 3) {
                 if (Objects.equals(message[1], "like")) {
                     newsList.get(pos).like = true;
                     newsList.get(pos).fav = false;
@@ -208,7 +208,7 @@ public class DiscoverFragment extends Fragment {
                 }
             }
             else {
-                assert(message.length == 1);
+                assert(message.length == 2);
                 newsList.get(pos).like = false;
                 newsList.get(pos).fav = false;
             }

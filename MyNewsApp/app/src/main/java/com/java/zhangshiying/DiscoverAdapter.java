@@ -202,14 +202,15 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                 boolean tmpFlag = false;
                 if (!news.read) {
                     news.read = true;
-                    FavoritesFragment.historyNewsList.add(news);
-                    Storage.write(mainActivityContext.getApplicationContext(), "historyNewsList", Storage.joinNewsList(FavoritesFragment.historyNewsList));
+                    HistoryFragment.historyNewsList.add(news);
+                    Storage.write(mainActivityContext.getApplicationContext(), "historyNewsList", Storage.joinNewsList(HistoryFragment.historyNewsList));
                     tmpFlag = true;
                 }
-                System.out.println("[DiscoverAdapter]: pos = " + pos + ", news = " + news);
+                System.out.println("[DiscoverAdapter]: [pos] = " + pos + ", [news] = " + news);
                 Gson gson = new Gson();
                 String send = gson.toJson(news);
-                launcher.launch(send);
+                if (launcher != null) launcher.launch(send);
+                else System.out.println("[launcher error]: discover");
 //                if (tmpFlag)
             }
         });

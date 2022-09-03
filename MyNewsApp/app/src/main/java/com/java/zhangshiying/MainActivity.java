@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public DiscoverFragment discoverFragment;
     public SearchFragment searchFragment;
     public FavoritesFragment favoritesFragment;
+    public HistoryFragment historyFragment;
     private View loadPulse;
 
     static final int pageSize = 20;
@@ -140,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
         searchFragment = new SearchFragment(pageSize);
         favoritesFragment = new FavoritesFragment();
+        historyFragment = new HistoryFragment();
 
         initFavorites();
 
@@ -168,6 +170,10 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.menu_favorites:
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, favoritesFragment).commit();
                         return true;
+
+                    case R.id.menu_history:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, historyFragment).commit();
+                        return true;
                 }
                 return false;
             }
@@ -177,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFavorites() {
         String _msg = Storage.findValue(getApplicationContext(), "historyNewsList");
-        if (!Objects.equals(_msg, "")) favoritesFragment.historyNewsList = Storage.parseNewsList(_msg);
+        if (!Objects.equals(_msg, "")) historyFragment.historyNewsList = Storage.parseNewsList(_msg);
         String _msg2 = Storage.findValue(getApplicationContext(), "favoritesNewsList");
         if (!Objects.equals(_msg2, "")) favoritesFragment.favNewsList = Storage.parseNewsList(_msg2);
     }

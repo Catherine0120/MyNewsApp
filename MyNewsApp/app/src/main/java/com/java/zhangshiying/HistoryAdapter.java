@@ -1,5 +1,6 @@
 package com.java.zhangshiying;
 
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -32,7 +33,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyViewHolder> {
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHolder> {
 
     private ArrayList<News> newsListDisplay;
     private Context context;
@@ -41,10 +42,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     private View view;
     private ActivityResultLauncher launcher;
 
-    private class FavoritesHandler extends Handler {
-        private final WeakReference<FavoritesFragment> myFragment;
-        public FavoritesHandler(FavoritesFragment fragment) {
-            myFragment = new WeakReference<FavoritesFragment>(fragment);
+    private class HistoryHandler extends Handler {
+        private final WeakReference<HistoryFragment> myFragment;
+        public HistoryHandler(HistoryFragment fragment) {
+            myFragment = new WeakReference<HistoryFragment>(fragment);
         }
 
         HashMap<Integer, Bitmap> myMap = new HashMap<>(); //<position, image>
@@ -108,7 +109,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         }
     }
 
-    private final FavoritesAdapter.FavoritesHandler myHandler = new FavoritesAdapter.FavoritesHandler((FavoritesFragment) myFragment);
+    private final HistoryAdapter.HistoryHandler myHandler = new HistoryAdapter.HistoryHandler((HistoryFragment) myFragment);
 
 
 
@@ -118,7 +119,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         view = View.inflate(context, R.layout.news_card_layout, null);
-        return new FavoritesAdapter.MyViewHolder(view);
+        return new HistoryAdapter.MyViewHolder(view);
     }
 
     @Override
@@ -127,9 +128,9 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         holder.setIsRecyclable(false);
         News news = newsListDisplay.get(position);
 
-        holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_teal));
-        holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_teal)));
-        holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.teal_700)));
+        holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_grey));
+        holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_grey)));
+        holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_grey)));
 
         holder.title.setText(news.title);
         holder.category.setText(news.category);
@@ -161,11 +162,11 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
             public void onClick(View view) {
                 News news = newsListDisplay.get(pos);
                 news.pos = pos;
-                System.out.println("1 [FavoritesAdapter]: [pos]=" + pos + ", [news]=" + news.title);
+                System.out.println("1 [HistoryAdapter]: [pos]=" + pos + ", [news]=" + news.title);
                 Gson gson = new Gson();
                 String send = gson.toJson(news);
                 if (launcher != null) launcher.launch(send);
-                else System.out.println("[launcher error]: favorites");
+                else System.out.println("[launcher error]: history");
             }
         });
 
@@ -176,8 +177,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         return newsListDisplay == null ? 0 : newsListDisplay.size();
     }
 
-    public FavoritesAdapter(ArrayList<News> favNewsList, Context activity, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher launcher) {
-        if (favNewsList != null ) newsListDisplay = (ArrayList<News>) favNewsList.clone();
+    public HistoryAdapter(ArrayList<News> historyNewsList, Context activity, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher launcher) {
+        if (historyNewsList != null ) newsListDisplay = (ArrayList<News>) historyNewsList.clone();
         context = activity;
         myFragment = fragment;
         this.myLayoutManager = myLayoutManager;
@@ -320,3 +321,4 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
 
 
 }
+

@@ -12,10 +12,6 @@
         app:actionViewClass="com.google.android.material.bottomnavigation.BottomNavigationView"/>
 
     <item
-        android:id="@+id/menu_blank"
-        android:title=" " />
-
-    <item
         android:id="@+id/menu_favorites"
         android:icon="@drawable/ic_favorites"
         android:iconTintMode="src_atop"
@@ -23,5 +19,16 @@
         android:title="@string/menu_favorites"
         app:actionViewClass="com.google.android.material.bottomnavigation.BottomNavigationView"/>
 
+    <item
+        android:id="@+id/menu_history"
+        android:icon="@drawable/ic_history24"
+        android:iconTintMode="src_atop"
+        app:showAsAction="always"
+        android:title="@string/history"
+        app:actionViewClass="com.google.android.material.bottomnavigation.BottomNavigationView"/>
+
+    <item
+        android:id="@+id/menu_blank"
+        android:title=" " />
 
 </menu>

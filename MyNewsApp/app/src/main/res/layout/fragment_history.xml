@@ -9,15 +9,14 @@
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_fav"
+        android:id="@+id/rv_his"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:layout_margin="10dp"/>
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="@color/white"/>
+        android:layout_height="1dp"
+        android:background="#B1BCC3"/>
 
 </LinearLayout>

@@ -31,6 +31,10 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DetailNewsActivity extends AppCompatActivity {
 
@@ -42,7 +46,8 @@ public class DetailNewsActivity extends AppCompatActivity {
     ShineButton likeButton, favButton;
 
     int fromPos;
-    String resultMsg = "";
+
+    boolean conditionChanged = false;
 
 
     private class DetailHandler extends Handler {
@@ -105,9 +110,12 @@ public class DetailNewsActivity extends AppCompatActivity {
         if (news.fav) favButton.setChecked(true);
 
         fromPos = news.pos;
+        news.pos = -1;
         assert (fromPos != -1);
 
         setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
+
+        System.out.println("2 [DetailNewsActivity] news.read: [pos]=" + fromPos + ", [news]=" + news.title);
 
         likeButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
@@ -120,11 +128,27 @@ public class DetailNewsActivity extends AppCompatActivity {
         favButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
-                if (checked && !news.fav) FavoritesFragment.favNewsList.add(news);
+                conditionChanged = true;
+                if (checked && !news.fav) {
+                    FavoritesFragment.favNewsList.add(news);
+                    deDuplicate();
+                }
+                if (!checked) FavoritesFragment.favNewsList.remove(news);
                 Storage.write(getApplicationContext(), "favoritesNewsList", Storage.joinNewsList(FavoritesFragment.favNewsList));
                 news.fav = checked;
-                resultMsg += fromPos + ",fav,";
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
+                System.out.println("2 [DetailNewsActivity] news.fav: [pos]=" + fromPos + ", [news]=" + news.title);
+            }
+
+            private void deDuplicate() {
+                Set<News> set = new HashSet<News>();
+                ArrayList<News> newList = new ArrayList<News>();
+                for (News news : FavoritesFragment.favNewsList) {
+                    if (set.add(news)) {
+                        newList.add(news);
+                    }
+                }
+                FavoritesFragment.favNewsList = newList;
             }
         });
 
@@ -181,9 +205,13 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private String getResultMsg() {
-        if (news.like && news.fav) return fromPos + ",like" + ",fav";
-        else if (news.like) return fromPos + ",like";
-        else if (news.fav) return fromPos + ",fav";
-        else return Integer.toString(fromPos);
+        String feedback = "";
+        if (news.like && news.fav) feedback = fromPos + ",like" + ",fav";
+        else if (news.like) feedback = fromPos + ",like";
+        else if (news.fav) feedback = fromPos + ",fav";
+        else feedback = Integer.toString(fromPos);
+        if (conditionChanged) feedback += ",true";
+        else feedback += ",false";
+        return feedback;
     }
 }
