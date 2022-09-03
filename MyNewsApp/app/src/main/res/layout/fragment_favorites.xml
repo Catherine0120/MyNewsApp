@@ -35,19 +35,19 @@
             android:textSize="18sp"
             android:fontFamily="sans-serif-medium"
             android:gravity="center_vertical|start"
-            android:layout_marginStart="30sp"
+            android:layout_marginStart="32sp"
             android:textColor="@color/teal_700"/>
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/switch_fav"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="8dp"
             android:fontFamily="sans-serif-light"
             android:text="To History"
             android:textColor="@color/dark_grey"
             android:textSize="16sp"
-            app:switchPadding="4dp"
+            app:switchPadding="2dp"
             android:checked="false"
             app:thumbTint="@drawable/select_switch_thumb"
             app:trackTint="@drawable/select_switch_track"

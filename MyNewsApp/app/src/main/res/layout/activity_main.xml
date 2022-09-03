@@ -21,7 +21,7 @@
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottom_app_bar"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="62dp"
             android:backgroundTint="@color/light_blue"
             android:layout_gravity="bottom"
             app:fabCradleMargin="7dp"
