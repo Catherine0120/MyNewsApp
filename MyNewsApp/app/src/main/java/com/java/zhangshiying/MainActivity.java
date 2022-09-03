@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment, searchFragment).commit();
-                myBottomNavigationView.getMenu().getItem(1).setChecked(true); //blank_item
+                myBottomNavigationView.getMenu().getItem(3).setChecked(true); //blank_item
 
             }
         });

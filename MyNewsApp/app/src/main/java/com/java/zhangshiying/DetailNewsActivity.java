@@ -34,6 +34,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class DetailNewsActivity extends AppCompatActivity {
@@ -64,7 +65,22 @@ public class DetailNewsActivity extends AppCompatActivity {
                         topImageView.setVisibility(View.VISIBLE);
                         try {
                             topImageView.setImageBitmap((Bitmap)((Object[]) msg.obj)[0]);
-                        } catch (Exception e) { e.printStackTrace();}
+                            boolean flag = false;
+                            for (News _news : HistoryFragment.historyNewsList) {
+                                System.out.println("[debug]: _news.title=" + _news.title);
+                                System.out.println("[debug]: _news.newsID=" + _news.newsID);
+                                System.out.println("[debug]: news.newsID=" + news.newsID);
+                                if (Objects.equals(_news.newsID, news.newsID)) {
+                                    System.out.println("[debug]: 哈哈哈哈");
+                                    _news.images.add((Bitmap)((Object[]) msg.obj)[0]);
+                                    System.out.println("[debug]: add to historyNewsList, " + _news.images.size());
+                                    flag = true;
+                                }
+                            }
+                            assert(flag);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                         break;
                     }
                     else {
@@ -73,7 +89,15 @@ public class DetailNewsActivity extends AppCompatActivity {
                             ImageView img = (ImageView) (((Object[]) msg.obj)[2]);
                             img.setImageBitmap((Bitmap)((Object[]) msg.obj)[0]);
                             myLinearLayout.addView(view);
-                        } catch (Exception e) { e.printStackTrace();}
+                            boolean flag = false;
+                            for (News _news : HistoryFragment.historyNewsList) {
+                                if (Objects.equals(_news.newsID, news.newsID)) {
+                                    _news.images.add((Bitmap)((Object[]) msg.obj)[0]);
+                                    flag = true;
+                                }
+                            }
+                            assert(flag);
+                        } catch (Exception e) { e.printStackTrace(); }
                         break;
                     }
                 default:
@@ -90,7 +114,6 @@ public class DetailNewsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_news);
 
         news = new GsonBuilder().create().fromJson(this.getIntent().getStringExtra("news"), News.class);
-        System.out.println("[DetailNewsActivity]: news = " + news);
 
         TextView titleDetail = (TextView) findViewById(R.id.title_detail);
         titleDetail.setText(news.title);
@@ -115,12 +138,13 @@ public class DetailNewsActivity extends AppCompatActivity {
 
         setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
 
-        System.out.println("2 [DetailNewsActivity] news.read: [pos]=" + fromPos + ", [news]=" + news.title);
+        System.out.println("[DetailNewsActivity.onCreate]: [pos] = " + fromPos + ", [news] = " + news.title + " @ " + news);
 
         likeButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
                 news.like = checked;
+                System.out.println("            " + getResultMsg() + ", news.title = " + news.title);
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
             }
         });
@@ -128,28 +152,25 @@ public class DetailNewsActivity extends AppCompatActivity {
         favButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
-                conditionChanged = true;
-                if (checked && !news.fav) {
-                    FavoritesFragment.favNewsList.add(news);
-                    deDuplicate();
-                }
-                if (!checked) FavoritesFragment.favNewsList.remove(news);
-                Storage.write(getApplicationContext(), "favoritesNewsList", Storage.joinNewsList(FavoritesFragment.favNewsList));
-                news.fav = checked;
-                setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
-                System.out.println("2 [DetailNewsActivity] news.fav: [pos]=" + fromPos + ", [news]=" + news.title);
-            }
-
-            private void deDuplicate() {
-                Set<News> set = new HashSet<News>();
-                ArrayList<News> newList = new ArrayList<News>();
-                for (News news : FavoritesFragment.favNewsList) {
-                    if (set.add(news)) {
-                        newList.add(news);
+                if (news.fav) {
+                    if (!checked) {
+                        news.fav = false;
+                        FavoritesFragment.removeNewsID(news.newsID);
+                        conditionChanged = true; //传递信息让adapter notify
                     }
                 }
-                FavoritesFragment.favNewsList = newList;
+                else {
+                    news.fav = checked;
+                    if (checked) {
+                        FavoritesFragment.favNewsList.add(news);
+                    }
+                    conditionChanged = true;
+                }
+                if (conditionChanged) Storage.write(getApplicationContext(), "favoritesNewsList", Storage.joinNewsList(FavoritesFragment.favNewsList));
+                System.out.println("            " + getResultMsg() + ", news.title = " + news.title);
+                setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
             }
+
         });
 
         if (news.imageExist) {
@@ -184,8 +205,6 @@ public class DetailNewsActivity extends AppCompatActivity {
                     connection.connect();
                     InputStream input = connection.getInputStream();
                     Bitmap myBitmap = BitmapFactory.decodeStream(input);
-//                    System.out.println("[" + pos + "]: SUCCESS src = " + src);
-//                    Log.e("Bitmap","returned");
 
                     Message msg = new Message();
                     Bundle bundle = new Bundle();

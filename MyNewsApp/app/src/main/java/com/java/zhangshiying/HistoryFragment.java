@@ -23,8 +23,10 @@ public class HistoryFragment extends Fragment {
     public static ArrayList<News> historyNewsList = new ArrayList<>();
 
     private RecyclerView result;
-    private HistoryAdapter myHistoryAdapter;
+    public HistoryAdapter myHistoryAdapter;
     private LinearLayoutManager myLayoutManager;
+
+    ActivityResultLauncher<String> launcher;
 
     public HistoryFragment() {}
 
@@ -38,44 +40,45 @@ public class HistoryFragment extends Fragment {
         result = view.findViewById(R.id.rv_his);
         result.setLayoutManager(myLayoutManager);
 
-        myHistoryAdapter = new HistoryAdapter(historyNewsList, getActivity(), HistoryFragment.this, myLayoutManager, launcher);
-        result.setAdapter(myHistoryAdapter);
+        launcher = registerForActivityResult(new HistoryFragment.ResultContract(), new ActivityResultCallback<String>() {
+            @Override
+            public void onActivityResult(String result) {
+                String[] message = result.split(",");
+                int pos = Integer.parseInt(message[0]);
+                String conditionChanged = message[message.length - 1];
+                if (message.length == 4) {
+                    historyNewsList.get(pos).like = true;
+                    historyNewsList.get(pos).fav = true;
+                }
+                else if (message.length == 3) {
+                    if (Objects.equals(message[1], "like")) {
+                        historyNewsList.get(pos).like = true;
+                        historyNewsList.get(pos).fav = false;
+                    }
+                    if (Objects.equals(message[1], "fav")) {
+                        historyNewsList.get(pos).like = false;
+                        historyNewsList.get(pos).fav = true;
+                    }
+                }
+                else {
+                    assert(message.length == 2);
+                    historyNewsList.get(pos).like = false;
+                    historyNewsList.get(pos).fav = false;
+                }
+                //do something
+//            if (Objects.equals(conditionChanged, "true")) {
+//                //告诉FavoritesFragment
+//            }
+            }
+        });
 
+        myHistoryAdapter = new HistoryAdapter(getActivity(), HistoryFragment.this, myLayoutManager, launcher);
+        result.setAdapter(myHistoryAdapter);
         return view;
     }
 
 
-    ActivityResultLauncher<String> launcher = registerForActivityResult(new HistoryFragment.ResultContract(), new ActivityResultCallback<String>() {
-        @Override
-        public void onActivityResult(String result) {
-            String[] message = result.split(",");
-            int pos = Integer.parseInt(message[0]);
-            String conditionChanged = message[message.length - 1];
-            if (message.length == 4) {
-                historyNewsList.get(pos).like = true;
-                historyNewsList.get(pos).fav = true;
-            }
-            else if (message.length == 3) {
-                if (Objects.equals(message[1], "like")) {
-                    historyNewsList.get(pos).like = true;
-                    historyNewsList.get(pos).fav = false;
-                }
-                if (Objects.equals(message[1], "fav")) {
-                    historyNewsList.get(pos).like = false;
-                    historyNewsList.get(pos).fav = true;
-                }
-            }
-            else {
-                assert(message.length == 2);
-                historyNewsList.get(pos).like = false;
-                historyNewsList.get(pos).fav = false;
-            }
-            //do something
-            if (Objects.equals(conditionChanged, "true")) {
-                myHistoryAdapter.notifyDataSetChanged();
-            }
-        }
-    });
+
 
     class ResultContract extends ActivityResultContract<String, String> {
         @NonNull

@@ -30,7 +30,7 @@ public class FavoritesFragment extends Fragment {
     public static ArrayList<News> favNewsList = new ArrayList<>();
 
     private RecyclerView result;
-    private FavoritesAdapter myFavoritesAdapter;
+    public FavoritesAdapter myFavoritesAdapter;
     private LinearLayoutManager myLayoutManager;
 
     public FavoritesFragment() {}
@@ -45,45 +45,47 @@ public class FavoritesFragment extends Fragment {
         result = view.findViewById(R.id.rv_fav);
         result.setLayoutManager(myLayoutManager);
 
-        myFavoritesAdapter = new FavoritesAdapter(favNewsList, getActivity(), FavoritesFragment.this, myLayoutManager, launcher);
+        ActivityResultLauncher<String> launcher = registerForActivityResult(new FavoritesFragment.ResultContract(), new ActivityResultCallback<String>() {
+            @Override
+            public void onActivityResult(String result) {
+                String[] message = result.split(",");
+                int pos = Integer.parseInt(message[0]);
+                String conditionChanged = message[message.length - 1];
+                if (Objects.equals(conditionChanged, "true")) {
+//                    myFavoritesAdapter = new FavoritesAdapter(getActivity(), FavoritesFragment.this, myLayoutManager, launcher);
+                }
+                else {
+                    if (message.length == 4) {
+                        favNewsList.get(pos).like = true;
+                        favNewsList.get(pos).fav = true;
+                    }
+                    else if (message.length == 3) {
+                        if (Objects.equals(message[1], "like")) {
+                            favNewsList.get(pos).like = true;
+                            favNewsList.get(pos).fav = false;
+                        }
+                        if (Objects.equals(message[1], "fav")) {
+                            favNewsList.get(pos).like = false;
+                            favNewsList.get(pos).fav = true;
+                        }
+                    }
+                    else {
+                        assert(message.length == 2);
+                        favNewsList.get(pos).like = false;
+                        favNewsList.get(pos).fav = false;
+                    }
+                }
+            }
+        });
+
+        myFavoritesAdapter = new FavoritesAdapter(getActivity(), FavoritesFragment.this, myLayoutManager, launcher);
         result.setAdapter(myFavoritesAdapter);
 
         return view;
     }
 
 
-    ActivityResultLauncher<String> launcher = registerForActivityResult(new FavoritesFragment.ResultContract(), new ActivityResultCallback<String>() {
-        @Override
-        public void onActivityResult(String result) {
-            String[] message = result.split(",");
-            int pos = Integer.parseInt(message[0]);
-            String conditionChanged = message[message.length - 1];
-            System.out.println("3 [FavoritesFragment] news result received: [pos]=" + pos + ", [news]=" + favNewsList.get(pos).title);
-            if (message.length == 4) {
-                favNewsList.get(pos).like = true;
-                favNewsList.get(pos).fav = true;
-            }
-            else if (message.length == 3) {
-                if (Objects.equals(message[1], "like")) {
-                    favNewsList.get(pos).like = true;
-                    favNewsList.get(pos).fav = false;
-                }
-                if (Objects.equals(message[1], "fav")) {
-                    favNewsList.get(pos).like = false;
-                    favNewsList.get(pos).fav = true;
-                }
-            }
-            else {
-                assert(message.length == 2);
-                favNewsList.get(pos).like = false;
-                favNewsList.get(pos).fav = false;
-            }
-            //do something
-            if (Objects.equals(conditionChanged, "true")) {
-                myFavoritesAdapter.notifyDataSetChanged();
-            }
-        }
-    });
+
 
     class ResultContract extends ActivityResultContract<String, String> {
         @NonNull
@@ -98,5 +100,9 @@ public class FavoritesFragment extends Fragment {
         public String parseResult(int resultCode, @Nullable Intent intent) {
             return intent.getStringExtra("feedback");
         }
+    }
+
+    public static void removeNewsID(String newsID) {
+        favNewsList.removeIf(news -> Objects.equals(news.newsID, newsID));
     }
 }

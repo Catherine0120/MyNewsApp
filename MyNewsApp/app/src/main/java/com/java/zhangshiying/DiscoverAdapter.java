@@ -43,6 +43,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyViewHolder> {
     Context mainActivityContext;
@@ -139,9 +140,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         VideoView video;
         ImageView closeBtn;
         MaterialCardView card;
+        LinearLayout images;
 
         public MyViewHolder(View itemView) {
             super(itemView);
+            images = itemView.findViewById(R.id.images);
             card = itemView.findViewById(R.id.materialCardView);
             title = itemView.findViewById(R.id.textTitle);
             category = itemView.findViewById(R.id.textCategory);
@@ -184,12 +187,25 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         if (news.imageExist) {
             boolean twoImages = false;
             if (news.imageCount >= 2) {
-                twoImages = true;
-                getBitmapFromURL(news.imageUrls.get(0), news.imageUrls.get(1), pos, twoImages);
+                if (news.read) {
+                    ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                    ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(getBitmapFromHis(news.newsID, 1));
+                    holder.images.setVisibility(View.VISIBLE);
+                }
+                else {
+                    twoImages = true;
+                    getBitmapFromURL(news.imageUrls.get(0), news.imageUrls.get(1), pos, twoImages);
+                }
             }
-            else getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, twoImages);
+            else {
+                if (news.read) {
+                    ImageView image = (ImageView) myLayoutManager.findViewByPosition(pos).findViewById(R.id.image);
+                    image.setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                    holder.image.setVisibility(View.VISIBLE);
+                }
+                else getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, twoImages);
+            }
         }
-        else holder.image.setVisibility(View.GONE);
         if (news.videoExist) {
             assert(false);
         }
@@ -199,19 +215,16 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             public void onClick(View view) {
                 News news = newsList.get(pos);
                 news.pos = pos;
-                boolean tmpFlag = false;
                 if (!news.read) {
                     news.read = true;
                     HistoryFragment.historyNewsList.add(news);
+                    System.out.println("[debug]: write into historyNewsList");
                     Storage.write(mainActivityContext.getApplicationContext(), "historyNewsList", Storage.joinNewsList(HistoryFragment.historyNewsList));
-                    tmpFlag = true;
                 }
-                System.out.println("[DiscoverAdapter]: [pos] = " + pos + ", [news] = " + news);
+                System.out.println("[DiscoverAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
                 Gson gson = new Gson();
                 String send = gson.toJson(news);
-                if (launcher != null) launcher.launch(send);
-                else System.out.println("[launcher error]: discover");
-//                if (tmpFlag)
+                launcher.launch(send);
             }
         });
     }
@@ -346,5 +359,15 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         newsList.remove(position);
         notifyItemRemoved(position);
         notifyDataSetChanged();
+    }
+
+    private Bitmap getBitmapFromHis(String newsID, int num) {
+        for (News news : HistoryFragment.historyNewsList) {
+            if (Objects.equals(news.newsID, newsID)) {
+                return news.images.get(num);
+            }
+        }
+        assert(false);
+        return null;
     }
 }

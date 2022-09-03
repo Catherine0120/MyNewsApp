@@ -30,6 +30,6 @@
 7. 看过的新闻边框变灰：若采用`notifyDataSetChanged`来调用`onBindView`开销太大，会造成明显卡顿。同样可能造成明显卡顿的包括频繁加载图片需要访问`url`。可能需要找到加载图片开销更小的更好方式
 8. `DiscoverAdapter`点击删除新闻`removeData`之后，`DiscoverFragment`的新闻列表尚不知晓，暂不清楚是否会导致两者的`pos`发生错位，同理也出现在`FavoritesFragment`和`FavoritesAdapter`之间
    【解决思路】：`closeBtn`触发后通知`Fragment`，同步`newsList`列表（可以在解决之前试一下`pos`错位现象是否存在）
-9. 在`FavoritesFragement`收藏夹中进入新闻详情页点击取消收藏，收藏列表中仍能看到该新闻，且在此点击进入新闻报错：`You must ensure the ActivityResultLauncher is registered before calling launch().`（收藏操作在`DetailNewsActivity`中进行）
-   【解决思路】：`DetailNewsActivity`增加取消收藏操作，如`if (!checked): remove news from favNewsList`（注意：只需要修改`newsList`数据，单条`news`中的状态记录`news.fav`是正确的（这也是报错原因）
+9. ~~在`FavoritesFragement`收藏夹中进入新闻详情页点击取消收藏，收藏列表中仍能看到该新闻，且在此点击进入新闻报错：`You must ensure the ActivityResultLauncher is registered before calling launch().`（收藏操作在`DetailNewsActivity`中进行）
+   【解决思路】：`DetailNewsActivity`增加取消收藏操作，如`if (!checked): remove news from favNewsList`（注意：只需要修改`newsList`数据，单条`news`中的状态记录`news.fav`是正确的（这也是报错原因）~~
 
