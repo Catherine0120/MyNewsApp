@@ -16,6 +16,7 @@ public class News {
     String newsID = "";
 
     public String title, category, origin, time;
+    public String content;
     public List<String> imageUrls,videoUrls;
     boolean imageExist = false;
     boolean videoExist = false;
@@ -28,16 +29,11 @@ public class News {
     boolean read = false;
     boolean readDetail = false;
 
-    int pos = -1;
-
-    public String content;
-
     News(JSONObject news) {
         try {
             this.newsID = news.getString("newsID");
             if (this.newsID.equals("")) {
                 this.newsID = getRandomString(44);
-                System.out.println("[News()]: randomly create a newsID");
             }
             this.title = news.getString("title");
             this.category = news.getString("category");

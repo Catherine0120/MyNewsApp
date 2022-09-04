@@ -26,18 +26,13 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
-
-/* local storage (shared preference)
-1. DiscoverFragment currentPage
-2. historyNewsList, favNewsList
- */
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -129,12 +124,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        loadPulse = findViewById(R.id.spin_kit_main);
+        loadPulse.bringToFront();
+        loadPulse.setVisibility(View.VISIBLE);
 
         initApplication();
 
         getDiscoverFragment();
-
-        loadPulse = findViewById(R.id.spin_kit_main);
 
         myBottomAppBar = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(myBottomAppBar);
@@ -142,8 +138,6 @@ public class MainActivity extends AppCompatActivity {
         searchFragment = new SearchFragment(pageSize);
         favoritesFragment = new FavoritesFragment();
         historyFragment = new HistoryFragment();
-
-        initFavorites();
 
         myFloatingActionButton = findViewById(R.id.search_action_button);
         myFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -168,10 +162,16 @@ public class MainActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.menu_favorites:
+                        ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
+                        System.out.println("[Storage]: FavoritesNewsList");
+                        for (String str : myList1) System.out.println("      " + str);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, favoritesFragment).commit();
                         return true;
 
                     case R.id.menu_history:
+                        ArrayList<String> myList = Storage.findListValue(getApplicationContext(),"his");
+                        System.out.println("[Storage]: HistoryNewsList");
+                        for (String str : myList) System.out.println("      " + str);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, historyFragment).commit();
                         return true;
                 }
@@ -181,33 +181,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initFavorites() {
-        String _msg = Storage.findValue(getApplicationContext(), "historyNewsList");
-        if (!Objects.equals(_msg, "")) historyFragment.historyNewsList = Storage.parseNewsList(_msg);
-        String _msg2 = Storage.findValue(getApplicationContext(), "favoritesNewsList");
-        if (!Objects.equals(_msg2, "")) favoritesFragment.favNewsList = Storage.parseNewsList(_msg2);
-    }
-
     private void initApplication() {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         today = simpleDateFormat.format(date);
 
-        String originMsg = Storage.findValue(getApplicationContext(), "currentDiscoverPage");
-        if (!Objects.equals(originMsg, "")) {
-            String[] _msg = Storage.getValues(originMsg);
-            assert(_msg.length == 2);
-            String _currentPage = _msg[0];
-            String _today = _msg[1];
-            if (Objects.equals(today, _today)) {
-                currentPage = Integer.parseInt(_currentPage);
-                firstLoad = false;
-            }
-        }
+        if (Objects.equals(Storage.findValue(getApplicationContext(), "today"), today))
+            currentPage = Integer.parseInt(Storage.findValue(getApplicationContext(), "currentDiscoverPage"));
+
+        if (currentPage != 1) firstLoad = false;
     }
 
     private void getDiscoverFragment() {
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -218,7 +203,8 @@ public class MainActivity extends AppCompatActivity {
                     currentPage++;
                 }
                 firstLoad = false;
-                Storage.write(getApplicationContext(), "currentDiscoverPage", currentPage + "&&&" + today);
+                Storage.write(getApplicationContext(), "currentDiscoverPage", Integer.toString(currentPage));
+                Storage.write(getApplicationContext(), "today", today);
                 myUrl = String.format(myUrl, pageSize, today, currentPage);
                 System.out.println(myUrl);
                 String s = "";
@@ -246,7 +232,6 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println(myUrl);
                 String s = "";
                 try {
                     URL url  = new URL(myUrl);
@@ -255,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                     conn.setConnectTimeout(5000);
                     InputStream inputStream = conn.getInputStream();
                     s = MainActivity.readFromStream(inputStream);
-                    System.out.println("[" + myUrl + "]: " + s);
+                    System.out.println("[MainActivity.getSearchFragment]: [" + myUrl + "] " + s);
                     Bundle bundle = new Bundle();
                     bundle.putInt("total", total);
                     bundle.putString("url", myUrl);

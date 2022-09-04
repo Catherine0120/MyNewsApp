@@ -38,17 +38,12 @@ import java.util.Objects;
 import java.util.Set;
 
 public class DetailNewsActivity extends AppCompatActivity {
-
     News news;
     ImageView topImageView;
     HorizontalScrollView topImagesScrollView;
     LinearLayout myLinearLayout;
 
     ShineButton likeButton, favButton;
-
-    int fromPos;
-
-    boolean conditionChanged = false;
 
 
     private class DetailHandler extends Handler {
@@ -65,14 +60,9 @@ public class DetailNewsActivity extends AppCompatActivity {
                         topImageView.setVisibility(View.VISIBLE);
                         try {
                             topImageView.setImageBitmap((Bitmap)((Object[]) msg.obj)[0]);
-                            boolean flag = false;
-                            for (News _news : HistoryFragment.historyNewsList) {
-                                if (Objects.equals(_news.newsID, news.newsID)) {
-                                    _news.images.add((Bitmap)((Object[]) msg.obj)[0]);
-                                    flag = true;
-                                }
-                            }
-                            assert(flag);
+                            news.images.add((Bitmap)((Object[]) msg.obj)[0]);
+                            Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
+
                         } catch (Exception e) {
                             System.out.println("E [DetailNewsActivity.singleImage]: load or save error");
 //                            e.printStackTrace();
@@ -85,14 +75,8 @@ public class DetailNewsActivity extends AppCompatActivity {
                             ImageView img = (ImageView) (((Object[]) msg.obj)[2]);
                             img.setImageBitmap((Bitmap)((Object[]) msg.obj)[0]);
                             myLinearLayout.addView(view);
-                            boolean flag = false;
-                            for (News _news : HistoryFragment.historyNewsList) {
-                                if (Objects.equals(_news.newsID, news.newsID)) {
-                                    _news.images.add((Bitmap)((Object[]) msg.obj)[0]);
-                                    flag = true;
-                                }
-                            }
-                            assert(flag);
+                            news.images.add((Bitmap)((Object[]) msg.obj)[0]);
+                            Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
                         } catch (Exception e) {
                             System.out.println("E [DetailNewsActivity.multiImages]: load or save error");
 //                            e.printStackTrace();
@@ -112,7 +96,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_news);
 
-        news = new GsonBuilder().create().fromJson(this.getIntent().getStringExtra("news"), News.class);
+        news = Storage.findNewsValue(getApplicationContext(), this.getIntent().getStringExtra("newsID"));
 
         TextView titleDetail = (TextView) findViewById(R.id.title_detail);
         titleDetail.setText(news.title);
@@ -131,50 +115,24 @@ public class DetailNewsActivity extends AppCompatActivity {
         if (news.like) likeButton.setChecked(true);
         if (news.fav) favButton.setChecked(true);
 
-        fromPos = news.pos;
-        news.pos = -1;
-        assert (fromPos != -1);
-
-        setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
-
-        System.out.println("[DetailNewsActivity.onCreate]: [pos] = " + fromPos + ", [news] = " + news.title + " @ " + news);
+        setResult(RESULT_OK, new Intent().putExtra("feedback", "saySomething"));
 
         likeButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
-                //本地新闻取消点赞
-                if (news.readDetail) {
-                    FavoritesFragment.newsLikeStateChanged(news.newsID, checked);
-                    HistoryFragment.newsLikeStateChanged(news.newsID, checked);
-                }
                 news.like = checked;
-                System.out.println("            " + getResultMsg() + ", news.title = " + news.title);
-                setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
+                Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
             }
         });
 
         favButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
-                if (news.fav) {
-                    if (!checked) { //本来收藏的新闻现在取消收藏
-                        news.fav = false;
-                        FavoritesFragment.removeNewsID(news.newsID);
-                        conditionChanged = true;
-                    }
-                }
-                else {
-                    news.fav = checked;
-                    if (checked) { //本来没有收藏的新闻现在收藏
-                        FavoritesFragment.favNewsList.add(news);
-                    }
-                    conditionChanged = true;
-                }
-                if (conditionChanged) Storage.write(getApplicationContext(), "favoritesNewsList", Storage.joinNewsList(FavoritesFragment.favNewsList));
-                System.out.println("            " + getResultMsg() + ", news.title = " + news.title);
-                setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
+                if (!news.fav && checked) Storage.addFav(getApplicationContext(), news.newsID);
+                else if (news.fav && !checked) Storage.removeNewsFromFav(getApplicationContext(), news.newsID);
+                news.fav = checked;
+                Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
             }
-
         });
 
         if (news.imageExist) {
@@ -184,7 +142,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                 if (!news.readDetail) getBitmapFromURL(news.imageUrls.get(0), false, null, null);
                 else {
                     try {
-                        topImageView.setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                        topImageView.setImageBitmap(news.images.get(0));
                     } catch (Exception e) {
                         System.out.println("E [DetailNewsActivity.loadTitleImageFromLocal] : R.id.image not found");
 //                        e.printStackTrace();
@@ -200,7 +158,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                     ImageView img = view.findViewById(R.id.single_image);
                     if (!news.readDetail) getBitmapFromURL(news.imageUrls.get(i), true, view, img);
                     else {
-                        img.setImageBitmap(getBitmapFromHis(news.newsID, i));
+                        img.setImageBitmap(news.images.get(i));
                         myLinearLayout.addView(view);
                     }
                 }
@@ -239,25 +197,5 @@ public class DetailNewsActivity extends AppCompatActivity {
         }).start();
     }
 
-    private Bitmap getBitmapFromHis(String newsID, int num) {
-        for (News news : HistoryFragment.historyNewsList) {
-            if (Objects.equals(news.newsID, newsID)) {
-                if (news.images.size() > num)
-                    return news.images.get(num);
-            }
-        }
-        return null;
-    }
 
-
-    private String getResultMsg() {
-        String feedback = "";
-        if (news.like && news.fav) feedback = fromPos + ",like" + ",fav";
-        else if (news.like) feedback = fromPos + ",like";
-        else if (news.fav) feedback = fromPos + ",fav";
-        else feedback = Integer.toString(fromPos);
-        if (conditionChanged) feedback += ",true";
-        else feedback += ",false";
-        return feedback;
-    }
 }

@@ -60,6 +60,7 @@ public class DiscoverFragment extends Fragment {
         DROP_AND_REFRESH, SCROLL_AND_LOAD
     }
 
+
     private class MainHandler extends Handler {
         private final WeakReference<DiscoverFragment> myParent;
         public MainHandler(DiscoverFragment fragment) {
@@ -186,35 +187,9 @@ public class DiscoverFragment extends Fragment {
         return currentView;
     }
 
-
     ActivityResultLauncher<String> launcher = registerForActivityResult(new ResultContract(), new ActivityResultCallback<String>() {
         @Override
         public void onActivityResult(String result) {
-            String[] message = result.split(",");
-            int pos = Integer.parseInt(message[0]);
-            System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news]=" + newsList.get(pos));
-            newsList.get(pos).readDetail = true;
-            HistoryFragment.setReadDetail(newsList.get(pos).newsID);
-            FavoritesFragment.setReadDetail(newsList.get(pos).newsID);
-            if (message.length == 4) {
-                newsList.get(pos).like = true;
-                newsList.get(pos).fav = true;
-            }
-            else if (message.length == 3) {
-                if (Objects.equals(message[1], "like")) {
-                    newsList.get(pos).like = true;
-                    newsList.get(pos).fav = false;
-                }
-                if (Objects.equals(message[1], "fav")) {
-                    newsList.get(pos).like = false;
-                    newsList.get(pos).fav = true;
-                }
-            }
-            else {
-                assert(message.length == 2);
-                newsList.get(pos).like = false;
-                newsList.get(pos).fav = false;
-            }
             myDiscoverAdapter.notifyDataSetChanged();
         }
     });
@@ -224,7 +199,7 @@ public class DiscoverFragment extends Fragment {
         @Override
         public Intent createIntent(@NonNull Context context, String input) {
             Intent intent = new Intent(getContext(), DetailNewsActivity.class);
-            intent.putExtra("news", input);
+            intent.putExtra("newsID", input);
             return intent;
         }
 
@@ -234,6 +209,8 @@ public class DiscoverFragment extends Fragment {
         }
     }
 
+
+
     private void getNewsList(State state) {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -242,8 +219,8 @@ public class DiscoverFragment extends Fragment {
         if (condition == 0) {
             String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=&page=%d";
             myUrl = String.format(myUrl, pageSize, today, ++MainActivity.currentPage);
-            Storage.write(context.getApplicationContext(), "currentDiscoverPage", MainActivity.currentPage + "&&&" + today);
-            System.out.println(myUrl);
+            Storage.write(context.getApplicationContext(), "currentDiscoverPage", String.valueOf(MainActivity.currentPage));
+            System.out.println("[DiscoverFragment]: URL=" + myUrl);
             String s = "";
             try {
                 URL url  = new URL(myUrl);

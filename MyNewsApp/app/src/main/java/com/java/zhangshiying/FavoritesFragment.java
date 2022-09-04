@@ -26,9 +26,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class FavoritesFragment extends Fragment {
-
-    public static ArrayList<News> favNewsList = new ArrayList<>();
-
     private RecyclerView result;
     public FavoritesAdapter myFavoritesAdapter;
     private LinearLayoutManager myLayoutManager;
@@ -39,7 +36,6 @@ public class FavoritesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
         myLayoutManager = new LinearLayoutManager(FavoritesFragment.this.getContext());
         result = view.findViewById(R.id.rv_fav);
@@ -48,33 +44,7 @@ public class FavoritesFragment extends Fragment {
         ActivityResultLauncher<String> launcher = registerForActivityResult(new FavoritesFragment.ResultContract(), new ActivityResultCallback<String>() {
             @Override
             public void onActivityResult(String result) {
-                String[] message = result.split(",");
-                int pos = Integer.parseInt(message[0]);
-                String conditionChanged = message[message.length - 1];
-                if (Objects.equals(conditionChanged, "true")) {
-                    myFavoritesAdapter.notifyDataSetChanged();
-                }
-                else {
-                    if (message.length == 4) {
-                        favNewsList.get(pos).like = true;
-                        favNewsList.get(pos).fav = true;
-                    }
-                    else if (message.length == 3) {
-                        if (Objects.equals(message[1], "like")) {
-                            favNewsList.get(pos).like = true;
-                            favNewsList.get(pos).fav = false;
-                        }
-                        if (Objects.equals(message[1], "fav")) {
-                            favNewsList.get(pos).like = false;
-                            favNewsList.get(pos).fav = true;
-                        }
-                    }
-                    else {
-                        assert(message.length == 2);
-                        favNewsList.get(pos).like = false;
-                        favNewsList.get(pos).fav = false;
-                    }
-                }
+                myFavoritesAdapter.notifyDataSetChanged();
             }
         });
 
@@ -85,14 +55,12 @@ public class FavoritesFragment extends Fragment {
     }
 
 
-
-
     class ResultContract extends ActivityResultContract<String, String> {
         @NonNull
         @Override
         public Intent createIntent(@NonNull Context context, String input) {
             Intent intent = new Intent(getContext(), DetailNewsActivity.class);
-            intent.putExtra("news", input);
+            intent.putExtra("newsID", input);
             return intent;
         }
 
@@ -102,23 +70,4 @@ public class FavoritesFragment extends Fragment {
         }
     }
 
-    public static void removeNewsID(String newsID) {
-        favNewsList.removeIf(news -> Objects.equals(news.newsID, newsID));
-    }
-
-    public static void newsLikeStateChanged(String newsID, boolean like) {
-        for (News news : favNewsList) {
-            if (Objects.equals(news.newsID, newsID)) {
-                news.like = like;
-            }
-        }
-    }
-
-    public static void setReadDetail(String newsID) {
-        for (News news : favNewsList) {
-            if (Objects.equals(news.newsID, newsID)) {
-                news.readDetail = true;
-            }
-        }
-    }
 }

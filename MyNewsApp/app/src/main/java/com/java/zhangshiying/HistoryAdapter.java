@@ -2,6 +2,7 @@ package com.java.zhangshiying;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,7 +41,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     private Fragment myFragment;
     private LinearLayoutManager myLayoutManager;
     private View view;
-    private ActivityResultLauncher launcher;
+    private ArrayList<String> historyNewsList;
+
+    ActivityResultLauncher<String> launcher;
 
     @NonNull
     @Override
@@ -53,7 +56,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final int pos = position;
         holder.setIsRecyclable(false);
-        News news = HistoryFragment.historyNewsList.get(position);
+        News news = Storage.findNewsValue(context.getApplicationContext(), historyNewsList.get(pos));
+
         holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_grey));
         holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_grey)));
         holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_grey)));
@@ -65,19 +69,20 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         holder.closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removeData(pos);
+                historyNewsList.remove(pos);
+                notifyItemRemoved(pos);
+                notifyDataSetChanged();
             }
         });
 
         //display images
         if (news.imageExist) {
             if (news.imageCount >= 2) {
-                System.out.println("[debug]: image.Count >= 2");
-                ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(getBitmapFromHis(news.newsID, 0));
-                ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(getBitmapFromHis(news.newsID, 1));
+                ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(news.images.get(0));
+                ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(news.images.get(1));
                 holder.images.setVisibility(View.VISIBLE);
             } else {
-                holder.image.setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                holder.image.setImageBitmap(news.images.get(0));
                 holder.image.setVisibility(View.VISIBLE);
             }
         }
@@ -88,12 +93,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         view.findViewById(R.id.materialCardView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                News news = HistoryFragment.historyNewsList.get(pos);
-                news.pos = pos;
                 System.out.println("[HistoryAdapter.onClick]: [pos]=" + pos + ", [news]=" + news.title);
-                Gson gson = new Gson();
-                String send = gson.toJson(news);
-                launcher.launch(send);
+                launcher.launch(news.newsID);
             }
         });
 
@@ -101,10 +102,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
     @Override
     public int getItemCount() {
-        return HistoryFragment.historyNewsList == null ? 0 : HistoryFragment.historyNewsList.size();
+        return historyNewsList == null ? 0 : historyNewsList.size();
     }
 
-    public HistoryAdapter(Context activity, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher launcher) {
+    public HistoryAdapter(Context activity, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher<String> launcher) {
+        historyNewsList = Storage.findListValue(activity.getApplicationContext(), "his");
         context = activity;
         myFragment = fragment;
         this.myLayoutManager = myLayoutManager;
@@ -133,22 +135,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         }
     }
 
-    public void removeData(int position) {
-        HistoryFragment.historyNewsList.remove(position);
-        notifyItemRemoved(position);
-        notifyDataSetChanged();
-    }
 
-    private Bitmap getBitmapFromHis(String newsID, int num) {
-        System.out.println("[debug]: TARGET newsID=" + newsID);
-        for (News news : HistoryFragment.historyNewsList) {
-            System.out.println("[debug]: " + news.title + ", " + news.newsID);
-            if (Objects.equals(news.newsID, newsID)) {
-                if (news.images.size() > num)
-                    return news.images.get(num);
-            }
-        }
-        return null;
-    }
 }
 

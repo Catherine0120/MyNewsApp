@@ -20,13 +20,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class HistoryFragment extends Fragment {
-    public static ArrayList<News> historyNewsList = new ArrayList<>();
-
     private RecyclerView result;
     public HistoryAdapter myHistoryAdapter;
     private LinearLayoutManager myLayoutManager;
-
-    ActivityResultLauncher<String> launcher;
 
     public HistoryFragment() {}
 
@@ -39,34 +35,10 @@ public class HistoryFragment extends Fragment {
         result = view.findViewById(R.id.rv_his);
         result.setLayoutManager(myLayoutManager);
 
-        launcher = registerForActivityResult(new HistoryFragment.ResultContract(), new ActivityResultCallback<String>() {
+        ActivityResultLauncher<String> launcher = registerForActivityResult(new HistoryFragment.ResultContract(), new ActivityResultCallback<String>() {
             @Override
             public void onActivityResult(String result) {
-                String[] message = result.split(",");
-                int pos = Integer.parseInt(message[0]);
-                String conditionChanged = message[message.length - 1];
-                if (Objects.equals(conditionChanged, "true")) {
-                    myHistoryAdapter.notifyDataSetChanged();
-                }
-                if (message.length == 4) {
-                    historyNewsList.get(pos).like = true;
-                    historyNewsList.get(pos).fav = true;
-                }
-                else if (message.length == 3) {
-                    if (Objects.equals(message[1], "like")) {
-                        historyNewsList.get(pos).like = true;
-                        historyNewsList.get(pos).fav = false;
-                    }
-                    if (Objects.equals(message[1], "fav")) {
-                        historyNewsList.get(pos).like = false;
-                        historyNewsList.get(pos).fav = true;
-                    }
-                }
-                else {
-                    assert(message.length == 2);
-                    historyNewsList.get(pos).like = false;
-                    historyNewsList.get(pos).fav = false;
-                }
+                myHistoryAdapter.notifyDataSetChanged();
             }
         });
 
@@ -75,15 +47,12 @@ public class HistoryFragment extends Fragment {
         return view;
     }
 
-
-
-
     class ResultContract extends ActivityResultContract<String, String> {
         @NonNull
         @Override
         public Intent createIntent(@NonNull Context context, String input) {
             Intent intent = new Intent(getContext(), DetailNewsActivity.class);
-            intent.putExtra("news", input);
+            intent.putExtra("newsID", input);
             return intent;
         }
 
@@ -92,22 +61,4 @@ public class HistoryFragment extends Fragment {
             return intent.getStringExtra("feedback");
         }
     }
-
-    public static void newsLikeStateChanged(String newsID, boolean like) {
-        for (News news : historyNewsList) {
-            if (Objects.equals(news.newsID, newsID)) {
-                news.like = like;
-            }
-        }
-    }
-
-    public static void setReadDetail(String newsID) {
-        for (News news : historyNewsList) {
-            if (Objects.equals(news.newsID, newsID)) {
-                news.readDetail = true;
-            }
-        }
-    }
-
-
 }

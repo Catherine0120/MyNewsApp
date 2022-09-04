@@ -1,6 +1,7 @@
 package com.java.zhangshiying;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.gson.Gson;
+import com.google.gson.internal.bind.ArrayTypeAdapter;
 
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -40,12 +42,14 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     private Fragment myFragment;
     private LinearLayoutManager myLayoutManager;
     private View view;
-    private ActivityResultLauncher launcher;
+    private ArrayList<String> favNewsList;
+
+    ActivityResultLauncher<String> launcher;
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = View.inflate(context, R.layout.news_card_layout, null);
+        view = View.inflate(myFragment.getContext(), R.layout.news_card_layout, null);
         return new FavoritesAdapter.MyViewHolder(view);
     }
 
@@ -53,7 +57,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final int pos = position;
         holder.setIsRecyclable(false);
-        News news = FavoritesFragment.favNewsList.get(position);
+        News news = Storage.findNewsValue(context.getApplicationContext(), favNewsList.get(pos));
 
         holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_teal));
         holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_teal)));
@@ -66,7 +70,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         holder.closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                removeData(pos);
+                news.fav = false;
+                Storage.removeNewsFromFav(context.getApplicationContext(), news.newsID);
+                notifyItemRemoved(pos);
+                notifyDataSetChanged();
             }
         });
 
@@ -74,20 +81,20 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         if (news.imageExist) {
             if (news.imageCount >= 2) {
                 try {
-                    ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(getBitmapFromHis(news.newsID, 0));
-                    ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(getBitmapFromHis(news.newsID, 1));
+                    ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(news.images.get(0));
+                    ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(news.images.get(1));
                     holder.images.setVisibility(View.VISIBLE);
                 } catch (Exception e) {
-                    System.out.println("E [FavoritesAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
+                    System.out.println("[FavoritesAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
 //                        e.printStackTrace();
                 }
 
             } else {
                 try {
-                    holder.image.setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                    holder.image.setImageBitmap(news.images.get(0));
                     holder.image.setVisibility(View.VISIBLE);
                 } catch (Exception e) {
-                    System.out.println("E [FavoritesAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
+                    System.out.println("[FavoritesAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
 //                        e.printStackTrace();
                 }
 
@@ -100,38 +107,24 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         view.findViewById(R.id.materialCardView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                News news = FavoritesFragment.favNewsList.get(pos);
-                news.pos = pos;
                 System.out.println("[FavoritesAdapter.onClick]: [pos]=" + pos + ", [news]=" + news.title);
-                Gson gson = new Gson();
-                String send = gson.toJson(news);
-                launcher.launch(send);
+                launcher.launch(news.newsID);
             }
         });
 
     }
 
-    private Bitmap getBitmapFromHis(String newsID, int num) {
-        for (News news : HistoryFragment.historyNewsList) {
-            if (Objects.equals(news.newsID, newsID)) {
-                if (news.images.size() > num)
-                    return news.images.get(num);
-            }
-        }
-        System.out.println("[FavoritesAdapter.getBitmapFromHis]: cannot find title image(s), newsID=" + newsID + ", num=" + num);
-        return null;
-    }
-
     @Override
     public int getItemCount() {
-        return FavoritesFragment.favNewsList == null ? 0 : FavoritesFragment.favNewsList.size();
+        return favNewsList == null ? 0 : favNewsList.size();
     }
 
-    public FavoritesAdapter(Context activity, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher launcher) {
+    public FavoritesAdapter(Context activity, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher<String> launcher) {
         context = activity;
         this.myFragment = fragment;
         this.myLayoutManager = myLayoutManager;
         this.launcher = launcher;
+        favNewsList = Storage.findListValue(context.getApplicationContext(), "fav");
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -156,10 +149,5 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         }
     }
 
-    public void removeData(int position) {
-        FavoritesFragment.favNewsList.remove(position);
-        notifyItemRemoved(position);
-        notifyDataSetChanged();
-    }
 
 }
