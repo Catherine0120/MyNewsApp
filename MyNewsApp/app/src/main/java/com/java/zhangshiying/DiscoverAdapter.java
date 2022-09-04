@@ -234,7 +234,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                 Storage.write(mainActivityContext.getApplicationContext(), news.newsID, Storage.newsToString(news));
                 Storage.addHis(mainActivityContext.getApplicationContext(), news.newsID);
                 System.out.println("[DiscoverAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
-                launcher.launch(news.newsID);
+                launcher.launch(news.newsID + "," + pos);
             }
         });
     }

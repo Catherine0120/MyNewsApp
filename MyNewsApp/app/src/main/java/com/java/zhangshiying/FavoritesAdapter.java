@@ -108,7 +108,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
             @Override
             public void onClick(View view) {
                 System.out.println("[FavoritesAdapter.onClick]: [pos]=" + pos + ", [news]=" + news.title);
-                launcher.launch(news.newsID);
+                launcher.launch(news.newsID + "," + -1);
             }
         });
 

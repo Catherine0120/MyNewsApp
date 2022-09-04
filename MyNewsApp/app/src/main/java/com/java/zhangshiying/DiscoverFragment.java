@@ -190,6 +190,29 @@ public class DiscoverFragment extends Fragment {
     ActivityResultLauncher<String> launcher = registerForActivityResult(new ResultContract(), new ActivityResultCallback<String>() {
         @Override
         public void onActivityResult(String result) {
+            String[] message = result.split(",");
+            int pos = Integer.parseInt(message[0]);
+            System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news]=" + newsList.get(pos));
+            newsList.get(pos).readDetail = true;
+            if (message.length == 3) {
+                newsList.get(pos).like = true;
+                newsList.get(pos).fav = true;
+            }
+            else if (message.length == 2) {
+                if (Objects.equals(message[1], "like")) {
+                    newsList.get(pos).like = true;
+                    newsList.get(pos).fav = false;
+                }
+                if (Objects.equals(message[1], "fav")) {
+                    newsList.get(pos).like = false;
+                    newsList.get(pos).fav = true;
+                }
+            }
+            else {
+                assert(message.length == 1);
+                newsList.get(pos).like = false;
+                newsList.get(pos).fav = false;
+            }
             myDiscoverAdapter.notifyDataSetChanged();
         }
     });

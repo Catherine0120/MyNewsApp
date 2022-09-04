@@ -84,6 +84,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
             } else {
                 holder.image.setImageBitmap(news.images.get(0));
                 holder.image.setVisibility(View.VISIBLE);
+
             }
         }
         if (news.videoExist) {
@@ -94,7 +95,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
             @Override
             public void onClick(View view) {
                 System.out.println("[HistoryAdapter.onClick]: [pos]=" + pos + ", [news]=" + news.title);
-                launcher.launch(news.newsID);
+                launcher.launch(news.newsID + "," + -1);
             }
         });
 

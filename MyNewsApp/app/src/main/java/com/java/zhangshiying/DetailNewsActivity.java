@@ -45,6 +45,8 @@ public class DetailNewsActivity extends AppCompatActivity {
 
     ShineButton likeButton, favButton;
 
+    String pos = "";
+
 
     private class DetailHandler extends Handler {
         private final WeakReference<DetailNewsActivity> myActivity;
@@ -96,7 +98,8 @@ public class DetailNewsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_news);
 
-        news = Storage.findNewsValue(getApplicationContext(), this.getIntent().getStringExtra("newsID"));
+        news = Storage.findNewsValue(getApplicationContext(), this.getIntent().getStringExtra("newsID").split(",")[0]);
+        pos = this.getIntent().getStringExtra("newsID").split(",")[1];
 
         TextView titleDetail = (TextView) findViewById(R.id.title_detail);
         titleDetail.setText(news.title);
@@ -115,12 +118,13 @@ public class DetailNewsActivity extends AppCompatActivity {
         if (news.like) likeButton.setChecked(true);
         if (news.fav) favButton.setChecked(true);
 
-        setResult(RESULT_OK, new Intent().putExtra("feedback", "saySomething"));
+        setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
 
         likeButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
                 news.like = checked;
+                setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
                 Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
             }
         });
@@ -131,6 +135,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                 if (!news.fav && checked) Storage.addFav(getApplicationContext(), news.newsID);
                 else if (news.fav && !checked) Storage.removeNewsFromFav(getApplicationContext(), news.newsID);
                 news.fav = checked;
+                setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
                 Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
             }
         });
@@ -197,5 +202,13 @@ public class DetailNewsActivity extends AppCompatActivity {
         }).start();
     }
 
+    private String getResultMsg() {
+        String feedback = "";
+        if (news.like && news.fav) feedback = pos + ",like" + ",fav";
+        else if (news.like) feedback = pos + ",like";
+        else if (news.fav) feedback = pos + ",fav";
+        else feedback = pos;
+        return feedback;
+    }
 
 }

@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -164,14 +166,18 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.menu_favorites:
                         ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
                         System.out.println("[Storage]: FavoritesNewsList");
-                        for (String str : myList1) System.out.println("      " + str);
+                        for (String str : myList1) System.out.println("      " + str
+                                + ", title=" + Storage.findNewsValue(getApplicationContext(), str).title
+                                + ", images=" + bitmapToString(Storage.findNewsValue(getApplicationContext(), str).images.get(0)));
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, favoritesFragment).commit();
                         return true;
 
                     case R.id.menu_history:
                         ArrayList<String> myList = Storage.findListValue(getApplicationContext(),"his");
                         System.out.println("[Storage]: HistoryNewsList");
-                        for (String str : myList) System.out.println("      " + str);
+                        for (String str : myList) System.out.println("      " + str
+                                + ", title=" + Storage.findNewsValue(getApplicationContext(), str).title
+                                + ", images=" + bitmapToString(Storage.findNewsValue(getApplicationContext(), str).images.get(0)));
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, historyFragment).commit();
                         return true;
                 }
@@ -283,5 +289,13 @@ public class MainActivity extends AppCompatActivity {
         return s;
     }
 
+    public static String bitmapToString(Bitmap bitmap) {
+        String string = null;
+        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+        byte[] bytes = bStream.toByteArray();
+        string = Base64.encodeToString(bytes, Base64.DEFAULT);
+        return string;
+    }
 
 }
