@@ -52,7 +52,7 @@ public class FavoritesFragment extends Fragment {
                 int pos = Integer.parseInt(message[0]);
                 String conditionChanged = message[message.length - 1];
                 if (Objects.equals(conditionChanged, "true")) {
-//                    myFavoritesAdapter = new FavoritesAdapter(getActivity(), FavoritesFragment.this, myLayoutManager, launcher);
+                    myFavoritesAdapter.notifyDataSetChanged();
                 }
                 else {
                     if (message.length == 4) {
@@ -104,5 +104,21 @@ public class FavoritesFragment extends Fragment {
 
     public static void removeNewsID(String newsID) {
         favNewsList.removeIf(news -> Objects.equals(news.newsID, newsID));
+    }
+
+    public static void newsLikeStateChanged(String newsID, boolean like) {
+        for (News news : favNewsList) {
+            if (Objects.equals(news.newsID, newsID)) {
+                news.like = like;
+            }
+        }
+    }
+
+    public static void setReadDetail(String newsID) {
+        for (News news : favNewsList) {
+            if (Objects.equals(news.newsID, newsID)) {
+                news.readDetail = true;
+            }
+        }
     }
 }

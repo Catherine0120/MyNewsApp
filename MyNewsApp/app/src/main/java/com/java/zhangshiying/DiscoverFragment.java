@@ -44,7 +44,7 @@ public class DiscoverFragment extends Fragment {
     private ArrayList<News> tmpNewsList = new ArrayList<>();
     int tmpCount = 0;
 
-    private ArrayList<News> newsList;
+    public ArrayList<News> newsList;
     private Context context;
     private SwipeRefreshLayout mySwipeRefreshView;
     private RecyclerView result;
@@ -193,6 +193,9 @@ public class DiscoverFragment extends Fragment {
             String[] message = result.split(",");
             int pos = Integer.parseInt(message[0]);
             System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news]=" + newsList.get(pos));
+            newsList.get(pos).readDetail = true;
+            HistoryFragment.setReadDetail(newsList.get(pos).newsID);
+            FavoritesFragment.setReadDetail(newsList.get(pos).newsID);
             if (message.length == 4) {
                 newsList.get(pos).like = true;
                 newsList.get(pos).fav = true;
@@ -212,6 +215,7 @@ public class DiscoverFragment extends Fragment {
                 newsList.get(pos).like = false;
                 newsList.get(pos).fav = false;
             }
+            myDiscoverAdapter.notifyDataSetChanged();
         }
     });
 
@@ -345,4 +349,5 @@ public class DiscoverFragment extends Fragment {
         }
         return url;
     }
+
 }

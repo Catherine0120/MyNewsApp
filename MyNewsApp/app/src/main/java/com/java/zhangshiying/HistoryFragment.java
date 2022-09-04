@@ -30,7 +30,6 @@ public class HistoryFragment extends Fragment {
 
     public HistoryFragment() {}
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -46,6 +45,9 @@ public class HistoryFragment extends Fragment {
                 String[] message = result.split(",");
                 int pos = Integer.parseInt(message[0]);
                 String conditionChanged = message[message.length - 1];
+                if (Objects.equals(conditionChanged, "true")) {
+                    myHistoryAdapter.notifyDataSetChanged();
+                }
                 if (message.length == 4) {
                     historyNewsList.get(pos).like = true;
                     historyNewsList.get(pos).fav = true;
@@ -65,10 +67,6 @@ public class HistoryFragment extends Fragment {
                     historyNewsList.get(pos).like = false;
                     historyNewsList.get(pos).fav = false;
                 }
-                //do something
-//            if (Objects.equals(conditionChanged, "true")) {
-//                //告诉FavoritesFragment
-//            }
             }
         });
 
@@ -94,4 +92,22 @@ public class HistoryFragment extends Fragment {
             return intent.getStringExtra("feedback");
         }
     }
+
+    public static void newsLikeStateChanged(String newsID, boolean like) {
+        for (News news : historyNewsList) {
+            if (Objects.equals(news.newsID, newsID)) {
+                news.like = like;
+            }
+        }
+    }
+
+    public static void setReadDetail(String newsID) {
+        for (News news : historyNewsList) {
+            if (Objects.equals(news.newsID, newsID)) {
+                news.readDetail = true;
+            }
+        }
+    }
+
+
 }

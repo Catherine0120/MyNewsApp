@@ -52,9 +52,9 @@ public class DetailNewsActivity extends AppCompatActivity {
 
 
     private class DetailHandler extends Handler {
-        private final WeakReference<DetailNewsActivity> myAcitivity;
+        private final WeakReference<DetailNewsActivity> myActivity;
         public DetailHandler(DetailNewsActivity activity) {
-            myAcitivity = new WeakReference<DetailNewsActivity>(activity);
+            myActivity = new WeakReference<DetailNewsActivity>(activity);
         }
 
         @Override
@@ -67,19 +67,15 @@ public class DetailNewsActivity extends AppCompatActivity {
                             topImageView.setImageBitmap((Bitmap)((Object[]) msg.obj)[0]);
                             boolean flag = false;
                             for (News _news : HistoryFragment.historyNewsList) {
-                                System.out.println("[debug]: _news.title=" + _news.title);
-                                System.out.println("[debug]: _news.newsID=" + _news.newsID);
-                                System.out.println("[debug]: news.newsID=" + news.newsID);
                                 if (Objects.equals(_news.newsID, news.newsID)) {
-                                    System.out.println("[debug]: 哈哈哈哈");
                                     _news.images.add((Bitmap)((Object[]) msg.obj)[0]);
-                                    System.out.println("[debug]: add to historyNewsList, " + _news.images.size());
                                     flag = true;
                                 }
                             }
                             assert(flag);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            System.out.println("E [DetailNewsActivity.singleImage]: load or save error");
+//                            e.printStackTrace();
                         }
                         break;
                     }
@@ -97,7 +93,10 @@ public class DetailNewsActivity extends AppCompatActivity {
                                 }
                             }
                             assert(flag);
-                        } catch (Exception e) { e.printStackTrace(); }
+                        } catch (Exception e) {
+                            System.out.println("E [DetailNewsActivity.multiImages]: load or save error");
+//                            e.printStackTrace();
+                        }
                         break;
                     }
                 default:
@@ -143,6 +142,11 @@ public class DetailNewsActivity extends AppCompatActivity {
         likeButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
+                //本地新闻取消点赞
+                if (news.readDetail) {
+                    FavoritesFragment.newsLikeStateChanged(news.newsID, checked);
+                    HistoryFragment.newsLikeStateChanged(news.newsID, checked);
+                }
                 news.like = checked;
                 System.out.println("            " + getResultMsg() + ", news.title = " + news.title);
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
@@ -153,15 +157,15 @@ public class DetailNewsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
                 if (news.fav) {
-                    if (!checked) {
+                    if (!checked) { //本来收藏的新闻现在取消收藏
                         news.fav = false;
                         FavoritesFragment.removeNewsID(news.newsID);
-                        conditionChanged = true; //传递信息让adapter notify
+                        conditionChanged = true;
                     }
                 }
                 else {
                     news.fav = checked;
-                    if (checked) {
+                    if (checked) { //本来没有收藏的新闻现在收藏
                         FavoritesFragment.favNewsList.add(news);
                     }
                     conditionChanged = true;
@@ -177,7 +181,15 @@ public class DetailNewsActivity extends AppCompatActivity {
             if (news.imageCount == 1) {
                 topImageView = (ImageView) findViewById(R.id.image_detail);
                 topImageView.setVisibility(View.VISIBLE);
-                getBitmapFromURL(news.imageUrls.get(0), false, null, null);
+                if (!news.readDetail) getBitmapFromURL(news.imageUrls.get(0), false, null, null);
+                else {
+                    try {
+                        topImageView.setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                    } catch (Exception e) {
+                        System.out.println("E [DetailNewsActivity.loadTitleImageFromLocal] : R.id.image not found");
+//                        e.printStackTrace();
+                    }
+                }
             }
             else {
                 topImagesScrollView = (HorizontalScrollView) findViewById(R.id.horizontal_scroll_view_detail);
@@ -186,7 +198,11 @@ public class DetailNewsActivity extends AppCompatActivity {
                 for (int i = 0; i < news.imageCount; ++i) {
                     View view = LayoutInflater.from(this).inflate(R.layout.single_image_layout, myLinearLayout, false);
                     ImageView img = view.findViewById(R.id.single_image);
-                    getBitmapFromURL(news.imageUrls.get(i), true, view, img);
+                    if (!news.readDetail) getBitmapFromURL(news.imageUrls.get(i), true, view, img);
+                    else {
+                        img.setImageBitmap(getBitmapFromHis(news.newsID, i));
+                        myLinearLayout.addView(view);
+                    }
                 }
             }
         }
@@ -222,6 +238,17 @@ public class DetailNewsActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    private Bitmap getBitmapFromHis(String newsID, int num) {
+        for (News news : HistoryFragment.historyNewsList) {
+            if (Objects.equals(news.newsID, newsID)) {
+                if (news.images.size() > num)
+                    return news.images.get(num);
+            }
+        }
+        return null;
+    }
+
 
     private String getResultMsg() {
         String feedback = "";

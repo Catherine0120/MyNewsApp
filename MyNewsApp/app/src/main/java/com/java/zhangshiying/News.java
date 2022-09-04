@@ -26,6 +26,7 @@ public class News {
     boolean fav = false;
     boolean like = false;
     boolean read = false;
+    boolean readDetail = false;
 
     int pos = -1;
 

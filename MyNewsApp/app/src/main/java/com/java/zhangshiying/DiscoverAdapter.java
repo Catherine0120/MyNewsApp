@@ -73,8 +73,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         iv.setVisibility(View.VISIBLE);
                         iv.setImageBitmap((Bitmap)msg.obj);
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("[" + pos + "]: handleMessage error");
+//                        e.printStackTrace();
+                        System.out.println("E [DiscoverAdapter.handleTitleImage] pos=" + pos + ": R.id.image not found");
                         Log.e("loadImage", "error");
                     }
                     break;
@@ -84,8 +84,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                     try {
                         images = (LinearLayout) myLayoutManager.findViewByPosition(pos_case_2).findViewById(R.id.images);
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("R.id.images not founded");
+//                        e.printStackTrace();
+                        System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": R.id.images not found");
                         break;
                     }
                     if (myMap.containsKey(pos_case_2)
@@ -99,8 +99,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                             iv_2.setImageBitmap((Bitmap)msg.obj);
                             myMap.remove(pos_case_2);
                         } catch (Exception e) {
-                            e.printStackTrace();
-                            System.out.println("[" + pos_case_2 + "]: handleMessage (image_2) error");
+//                            e.printStackTrace();
+                            System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_2 error");
                             Log.e("loadImage2", "error");
                         }
                     }
@@ -109,8 +109,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                             myMap.put(pos_case_2, (Bitmap)msg.obj);
                             mapHelper.put(pos_case_2, msg.getData().getInt("label"));
                         } catch (Exception e) {
-                            e.printStackTrace();
-                            System.out.println("[" + pos_case_2 + "]: handleMessage (image_1) error");
+//                            e.printStackTrace();
+                            System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_1 error");
                             Log.e("loadImage1", "error");
                         }
                     }
@@ -127,11 +127,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
 
     public DiscoverAdapter(ArrayList<News> newsList, Context context, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher launcher) {
         this.mainActivityContext = context;
-        if (newsList != null) this.newsList = (ArrayList<News>) newsList.clone();
+        this.newsList = newsList;
         this.fragmentContext = fragment;
         this.myLayoutManager = myLayoutManager;
         this.launcher = launcher;
-        System.out.println("[DiscoverAdapter constructor]: newsList = " + newsList);
+        System.out.println("[DiscoverAdapter.Constructor]: newsList = " + newsList);
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -185,25 +185,38 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         });
 
         if (news.imageExist) {
-            boolean twoImages = false;
             if (news.imageCount >= 2) {
+                boolean cannotLoadFromLocal = false;
                 if (news.read) {
-                    ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(getBitmapFromHis(news.newsID, 0));
-                    ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(getBitmapFromHis(news.newsID, 1));
-                    holder.images.setVisibility(View.VISIBLE);
+                    try {
+                        ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                        ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(getBitmapFromHis(news.newsID, 1));
+                        holder.images.setVisibility(View.VISIBLE);
+
+                    } catch (Exception e) {
+                        cannotLoadFromLocal = true;
+                        System.out.println("E [DiscoverAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
+//                        e.printStackTrace();
+                    }
                 }
-                else {
-                    twoImages = true;
-                    getBitmapFromURL(news.imageUrls.get(0), news.imageUrls.get(1), pos, twoImages);
+                if (cannotLoadFromLocal || !news.read) {
+                    getBitmapFromURL(news.imageUrls.get(0), news.imageUrls.get(1), pos, true);
                 }
             }
             else {
+                boolean cannotLoadFromLocal = false;
                 if (news.read) {
-                    ImageView image = (ImageView) myLayoutManager.findViewByPosition(pos).findViewById(R.id.image);
-                    image.setImageBitmap(getBitmapFromHis(news.newsID, 0));
-                    holder.image.setVisibility(View.VISIBLE);
+                    try {
+                        ImageView image = (ImageView) myLayoutManager.findViewByPosition(pos).findViewById(R.id.image);
+                        image.setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                        holder.image.setVisibility(View.VISIBLE);
+                    } catch (Exception e) {
+                        cannotLoadFromLocal = true;
+                        System.out.println("E [DiscoverAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
+//                        e.printStackTrace();
+                    }
                 }
-                else getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, twoImages);
+                if (cannotLoadFromLocal || !news.read)  getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, false);
             }
         }
         if (news.videoExist) {
@@ -218,7 +231,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                 if (!news.read) {
                     news.read = true;
                     HistoryFragment.historyNewsList.add(news);
-                    System.out.println("[debug]: write into historyNewsList");
                     Storage.write(mainActivityContext.getApplicationContext(), "historyNewsList", Storage.joinNewsList(HistoryFragment.historyNewsList));
                 }
                 System.out.println("[DiscoverAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
@@ -364,10 +376,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     private Bitmap getBitmapFromHis(String newsID, int num) {
         for (News news : HistoryFragment.historyNewsList) {
             if (Objects.equals(news.newsID, newsID)) {
-                return news.images.get(num);
+                if (news.images.size() > num)
+                    return news.images.get(num);
             }
         }
-        assert(false);
+        System.out.println("[DiscoverAdapter.getBitmapFromHis]: cannot find title image(s), newsID=" + newsID + ", num=" + num);
         return null;
     }
 }

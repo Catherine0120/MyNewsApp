@@ -73,12 +73,24 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         //display images
         if (news.imageExist) {
             if (news.imageCount >= 2) {
-                ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(getBitmapFromHis(news.newsID, 0));
-                ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(getBitmapFromHis(news.newsID, 1));
-                holder.images.setVisibility(View.VISIBLE);
+                try {
+                    ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                    ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(getBitmapFromHis(news.newsID, 1));
+                    holder.images.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    System.out.println("E [FavoritesAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
+//                        e.printStackTrace();
+                }
+
             } else {
-                holder.image.setImageBitmap(getBitmapFromHis(news.newsID, 0));
-                holder.image.setVisibility(View.VISIBLE);
+                try {
+                    holder.image.setImageBitmap(getBitmapFromHis(news.newsID, 0));
+                    holder.image.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    System.out.println("E [FavoritesAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
+//                        e.printStackTrace();
+                }
+
             }
         }
         if (news.videoExist) {
@@ -106,6 +118,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
                     return news.images.get(num);
             }
         }
+        System.out.println("[FavoritesAdapter.getBitmapFromHis]: cannot find title image(s), newsID=" + newsID + ", num=" + num);
         return null;
     }
 
