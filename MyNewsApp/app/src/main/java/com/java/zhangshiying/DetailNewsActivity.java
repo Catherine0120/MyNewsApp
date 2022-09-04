@@ -62,12 +62,11 @@ public class DetailNewsActivity extends AppCompatActivity {
                         topImageView.setVisibility(View.VISIBLE);
                         try {
                             topImageView.setImageBitmap((Bitmap)((Object[]) msg.obj)[0]);
-                            news.images.add((Bitmap)((Object[]) msg.obj)[0]);
+                            news.images.add(Storage.bitmapToString((Bitmap)((Object[]) msg.obj)[0]));
                             Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
-
                         } catch (Exception e) {
                             System.out.println("E [DetailNewsActivity.singleImage]: load or save error");
-//                            e.printStackTrace();
+                            e.printStackTrace();
                         }
                         break;
                     }
@@ -77,11 +76,11 @@ public class DetailNewsActivity extends AppCompatActivity {
                             ImageView img = (ImageView) (((Object[]) msg.obj)[2]);
                             img.setImageBitmap((Bitmap)((Object[]) msg.obj)[0]);
                             myLinearLayout.addView(view);
-                            news.images.add((Bitmap)((Object[]) msg.obj)[0]);
+                            news.images.add(Storage.bitmapToString((Bitmap)((Object[]) msg.obj)[0]));
                             Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
                         } catch (Exception e) {
                             System.out.println("E [DetailNewsActivity.multiImages]: load or save error");
-//                            e.printStackTrace();
+                            e.printStackTrace();
                         }
                         break;
                     }
@@ -99,6 +98,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_news);
 
         news = Storage.findNewsValue(getApplicationContext(), this.getIntent().getStringExtra("newsID").split(",")[0]);
+        System.out.println(news.images.size());
         pos = this.getIntent().getStringExtra("newsID").split(",")[1];
 
         TextView titleDetail = (TextView) findViewById(R.id.title_detail);
@@ -125,6 +125,7 @@ public class DetailNewsActivity extends AppCompatActivity {
             public void onCheckedChanged(View view, boolean checked) {
                 news.like = checked;
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
+                System.out.println("[DetailNewsActivity.getResultMsg()]: " + getResultMsg());
                 Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
             }
         });
@@ -136,6 +137,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                 else if (news.fav && !checked) Storage.removeNewsFromFav(getApplicationContext(), news.newsID);
                 news.fav = checked;
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
+                System.out.println("[DetailNewsActivity.getResultMsg()]: " + getResultMsg());
                 Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
             }
         });
@@ -144,13 +146,17 @@ public class DetailNewsActivity extends AppCompatActivity {
             if (news.imageCount == 1) {
                 topImageView = (ImageView) findViewById(R.id.image_detail);
                 topImageView.setVisibility(View.VISIBLE);
-                if (!news.readDetail) getBitmapFromURL(news.imageUrls.get(0), false, null, null);
+                if (!news.readDetail) {
+                    news.readDetail = true;
+                    System.out.println("[DEBUG] [DetailNewsActivity]: load image from URL");
+                    getBitmapFromURL(news.imageUrls.get(0), false, null, null);
+                }
                 else {
                     try {
-                        topImageView.setImageBitmap(news.images.get(0));
+                        topImageView.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(getApplicationContext(), news.newsID)).images.get(0)));
                     } catch (Exception e) {
                         System.out.println("E [DetailNewsActivity.loadTitleImageFromLocal] : R.id.image not found");
-//                        e.printStackTrace();
+                        e.printStackTrace();
                     }
                 }
             }
@@ -161,10 +167,19 @@ public class DetailNewsActivity extends AppCompatActivity {
                 for (int i = 0; i < news.imageCount; ++i) {
                     View view = LayoutInflater.from(this).inflate(R.layout.single_image_layout, myLinearLayout, false);
                     ImageView img = view.findViewById(R.id.single_image);
-                    if (!news.readDetail) getBitmapFromURL(news.imageUrls.get(i), true, view, img);
+                    if (!news.readDetail) {
+                        System.out.println("[DEBUG] [DetailNewsActivity]: load images from URL");
+                        getBitmapFromURL(news.imageUrls.get(i), true, view, img);
+                    }
                     else {
-                        img.setImageBitmap(news.images.get(i));
-                        myLinearLayout.addView(view);
+                        try {
+                            System.out.println("[DEBUG] [DetailNewsActivity]: load images from local");
+                            img.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(getApplicationContext(), news.newsID)).images.get(i)));
+                            myLinearLayout.addView(view);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             }
@@ -203,11 +218,10 @@ public class DetailNewsActivity extends AppCompatActivity {
     }
 
     private String getResultMsg() {
-        String feedback = "";
-        if (news.like && news.fav) feedback = pos + ",like" + ",fav";
-        else if (news.like) feedback = pos + ",like";
-        else if (news.fav) feedback = pos + ",fav";
-        else feedback = pos;
+        String feedback = news.newsID + "," + pos;
+        if (news.like && news.fav) feedback = feedback + ",like" + ",fav";
+        else if (news.like) feedback = feedback + ",like";
+        else if (news.fav) feedback = feedback + ",fav";
         return feedback;
     }
 

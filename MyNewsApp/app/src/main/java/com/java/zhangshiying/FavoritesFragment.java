@@ -44,6 +44,7 @@ public class FavoritesFragment extends Fragment {
         ActivityResultLauncher<String> launcher = registerForActivityResult(new FavoritesFragment.ResultContract(), new ActivityResultCallback<String>() {
             @Override
             public void onActivityResult(String result) {
+                myFavoritesAdapter.favNewsList = Storage.findListValue(getActivity().getApplicationContext(), "fav");
                 myFavoritesAdapter.notifyDataSetChanged();
             }
         });

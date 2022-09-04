@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("[Storage]: FavoritesNewsList");
                         for (String str : myList1) System.out.println("      " + str
                                 + ", title=" + Storage.findNewsValue(getApplicationContext(), str).title
-                                + ", images=" + bitmapToString(Storage.findNewsValue(getApplicationContext(), str).images.get(0)));
+                                + ", imagesSize=" + Storage.findNewsValue(getApplicationContext(), str).images.size());
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, favoritesFragment).commit();
                         return true;
 
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("[Storage]: HistoryNewsList");
                         for (String str : myList) System.out.println("      " + str
                                 + ", title=" + Storage.findNewsValue(getApplicationContext(), str).title
-                                + ", images=" + bitmapToString(Storage.findNewsValue(getApplicationContext(), str).images.get(0)));
+                                + ", imagesSize=" + Storage.findNewsValue(getApplicationContext(), str).images.size());
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, historyFragment).commit();
                         return true;
                 }
@@ -191,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         today = simpleDateFormat.format(date);
+        System.out.println("[debug]: today=" + today);
 
         if (Objects.equals(Storage.findValue(getApplicationContext(), "today"), today))
             currentPage = Integer.parseInt(Storage.findValue(getApplicationContext(), "currentDiscoverPage"));
@@ -287,15 +288,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return s;
-    }
-
-    public static String bitmapToString(Bitmap bitmap) {
-        String string = null;
-        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
-        byte[] bytes = bStream.toByteArray();
-        string = Base64.encodeToString(bytes, Base64.DEFAULT);
-        return string;
     }
 
 }

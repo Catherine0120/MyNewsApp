@@ -42,7 +42,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     private Fragment myFragment;
     private LinearLayoutManager myLayoutManager;
     private View view;
-    private ArrayList<String> favNewsList;
+    public ArrayList<String> favNewsList;
 
     ActivityResultLauncher<String> launcher;
 
@@ -57,6 +57,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final int pos = position;
         holder.setIsRecyclable(false);
+        System.out.println("[DEBUG]: " + pos);
         News news = Storage.findNewsValue(context.getApplicationContext(), favNewsList.get(pos));
 
         holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_teal));
@@ -81,8 +82,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         if (news.imageExist) {
             if (news.imageCount >= 2) {
                 try {
-                    ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(news.images.get(0));
-                    ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(news.images.get(1));
+                    ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
+                    ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap(news.images.get(1)));
                     holder.images.setVisibility(View.VISIBLE);
                 } catch (Exception e) {
                     System.out.println("[FavoritesAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
@@ -91,7 +92,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
 
             } else {
                 try {
-                    holder.image.setImageBitmap(news.images.get(0));
+                    holder.image.setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
                     holder.image.setVisibility(View.VISIBLE);
                 } catch (Exception e) {
                     System.out.println("[FavoritesAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");

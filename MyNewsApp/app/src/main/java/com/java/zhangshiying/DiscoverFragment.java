@@ -191,25 +191,28 @@ public class DiscoverFragment extends Fragment {
         @Override
         public void onActivityResult(String result) {
             String[] message = result.split(",");
-            int pos = Integer.parseInt(message[0]);
-            System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news]=" + newsList.get(pos));
+            String newsID = message[0];
+            int pos = Integer.parseInt(message[1]);
+            News news = Storage.findNewsValue(context.getApplicationContext(), newsID);
+            newsList.get(pos).images = (ArrayList<String>) news.images.clone();
+            System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news.title]=" + newsList.get(pos).title);
             newsList.get(pos).readDetail = true;
-            if (message.length == 3) {
+            if (message.length == 4) {
                 newsList.get(pos).like = true;
                 newsList.get(pos).fav = true;
             }
-            else if (message.length == 2) {
-                if (Objects.equals(message[1], "like")) {
+            else if (message.length == 3) {
+                if (Objects.equals(message[2], "like")) {
                     newsList.get(pos).like = true;
                     newsList.get(pos).fav = false;
                 }
-                if (Objects.equals(message[1], "fav")) {
+                if (Objects.equals(message[2], "fav")) {
                     newsList.get(pos).like = false;
                     newsList.get(pos).fav = true;
                 }
             }
             else {
-                assert(message.length == 1);
+                assert(message.length == 2);
                 newsList.get(pos).like = false;
                 newsList.get(pos).fav = false;
             }

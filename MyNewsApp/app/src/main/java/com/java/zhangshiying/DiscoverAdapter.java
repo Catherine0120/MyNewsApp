@@ -192,14 +192,13 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                 boolean cannotLoadFromLocal = false;
                 if (news.read) {
                     try {
-                        ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(news.images.get(0));
-                        ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(news.images.get(1));
+                        ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(0)));
+                        ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(1)));
                         holder.images.setVisibility(View.VISIBLE);
-
                     } catch (Exception e) {
                         cannotLoadFromLocal = true;
                         System.out.println("E [DiscoverAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
-//                        e.printStackTrace();
+                        e.printStackTrace();
                     }
                 }
                 if (cannotLoadFromLocal || !news.read) {
@@ -210,13 +209,12 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                 boolean cannotLoadFromLocal = false;
                 if (news.read) {
                     try {
-                        ImageView image = (ImageView) myLayoutManager.findViewByPosition(pos).findViewById(R.id.image);
-                        image.setImageBitmap(news.images.get(0));
+                        holder.image.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(0)));
                         holder.image.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         cannotLoadFromLocal = true;
                         System.out.println("E [DiscoverAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
-//                        e.printStackTrace();
+                        e.printStackTrace();
                     }
                 }
                 if (cannotLoadFromLocal || !news.read)  getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, false);
@@ -229,10 +227,12 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         view.findViewById(R.id.materialCardView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!news.read) news.read = true;
+                if (!news.read) {
+                    news.read = true;
+                    Storage.addHis(mainActivityContext.getApplicationContext(), news.newsID);
+                }
                 else news.readDetail = true;
                 Storage.write(mainActivityContext.getApplicationContext(), news.newsID, Storage.newsToString(news));
-                Storage.addHis(mainActivityContext.getApplicationContext(), news.newsID);
                 System.out.println("[DiscoverAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
                 launcher.launch(news.newsID + "," + pos);
             }

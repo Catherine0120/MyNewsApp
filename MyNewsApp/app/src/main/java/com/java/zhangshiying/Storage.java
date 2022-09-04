@@ -2,10 +2,16 @@ package com.java.zhangshiying;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +53,7 @@ public class Storage {
     public static void removeNewsFromFav(Context context, String newsID) {
         ArrayList<String> favNewsList = findListValue(context, "fav");
         favNewsList.removeIf(_newsID -> Objects.equals(_newsID, newsID));
-        write(context, "fav", String.join(",", favNewsList));
+        write(context, "fav", String.join(",", favNewsList) + ",");
     }
 
     //"his"
@@ -85,5 +91,26 @@ public class Storage {
     public static boolean contains(Context context, String key) {
         SharedPreferences prefs = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         return prefs.contains(key);
+    }
+
+    public static Bitmap stringToBitmap(String image) {
+        try {
+            byte[] encodeByte = Base64.decode(image, Base64.DEFAULT);
+            InputStream inputStream = new ByteArrayInputStream(encodeByte);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            return bitmap;
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
+        }
+    }
+
+    public static String bitmapToString(Bitmap bitmap) {
+        String string = null;
+        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+        byte[] bytes = bStream.toByteArray();
+        string = Base64.encodeToString(bytes, Base64.DEFAULT);
+        return string;
     }
 }

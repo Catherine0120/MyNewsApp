@@ -22,7 +22,7 @@ public class News {
     boolean videoExist = false;
     int imageCount = 0;
 
-    ArrayList<Bitmap> images = new ArrayList<>();
+    ArrayList<String> images = new ArrayList<>();
 
     boolean fav = false;
     boolean like = false;

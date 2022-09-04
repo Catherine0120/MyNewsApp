@@ -78,11 +78,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         //display images
         if (news.imageExist) {
             if (news.imageCount >= 2) {
-                ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(news.images.get(0));
-                ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(news.images.get(1));
+                ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
+                ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap(news.images.get(1)));
                 holder.images.setVisibility(View.VISIBLE);
             } else {
-                holder.image.setImageBitmap(news.images.get(0));
+                holder.image.setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
                 holder.image.setVisibility(View.VISIBLE);
 
             }
