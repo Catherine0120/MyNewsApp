@@ -77,18 +77,26 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
         //display images
         if (news.imageExist) {
-            if (news.imageCount >= 2) {
-                ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
-                ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap(news.images.get(1)));
-                holder.images.setVisibility(View.VISIBLE);
-            } else {
-                holder.image.setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
-                holder.image.setVisibility(View.VISIBLE);
+            if (Storage.findNewsValue(context.getApplicationContext(), news.newsID).images.size() >= 2) {
+                try {
+                    ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
+                    ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap(news.images.get(1)));
+                    holder.images.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    System.out.println("[HistoryAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
+                        e.printStackTrace();
+                }
+
+            } else if (Storage.findNewsValue(context.getApplicationContext(), news.newsID).images.size() == 1) {
+                try {
+                    holder.image.setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
+                    holder.image.setVisibility(View.VISIBLE);
+                } catch (Exception e) {
+                    System.out.println("[HistoryAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
+                        e.printStackTrace();
+                }
 
             }
-        }
-        if (news.videoExist) {
-            assert (false);
         }
 
         view.findViewById(R.id.materialCardView).setOnClickListener(new View.OnClickListener() {

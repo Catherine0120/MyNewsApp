@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Base64;
 import android.view.Menu;
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.menu_favorites:
                         ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
                         System.out.println("[Storage]: FavoritesNewsList");
+                        for (String str : myList1) System.out.println("      " + str);
                         for (String str : myList1) System.out.println("      " + str
                                 + ", title=" + Storage.findNewsValue(getApplicationContext(), str).title
                                 + ", imagesSize=" + Storage.findNewsValue(getApplicationContext(), str).images.size());
@@ -229,6 +231,12 @@ public class MainActivity extends AppCompatActivity {
                     myHandler.sendMessage(msg);
 
                 } catch (Exception e) {
+                    loadPulse.setVisibility(View.INVISIBLE);
+                    Looper.prepare();
+                    discoverFragment = new DiscoverFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
+                    Toast.makeText(MainActivity.this, "Network Failure", Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                     e.printStackTrace();
                 }
             }
@@ -257,6 +265,12 @@ public class MainActivity extends AppCompatActivity {
                     msg.what = 2;
                     myHandler.sendMessage(msg);
                 } catch (Exception e) {
+                    loadPulse.setVisibility(View.INVISIBLE);
+                    Looper.prepare();
+                    discoverFragment = new DiscoverFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
+                    Toast.makeText(MainActivity.this, "Network Failure", Toast.LENGTH_SHORT).show();
+                    Looper.loop();
                     e.printStackTrace();
                 }
             }

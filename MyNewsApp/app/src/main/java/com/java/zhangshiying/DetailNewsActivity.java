@@ -98,7 +98,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_news);
 
         news = Storage.findNewsValue(getApplicationContext(), this.getIntent().getStringExtra("newsID").split(",")[0]);
-        System.out.println(news.images.size());
+        System.out.println("[DEBUG] [DetailNewsActivity]: storage.news.images.size() = " + news.images.size());
         pos = this.getIntent().getStringExtra("newsID").split(",")[1];
 
         TextView titleDetail = (TextView) findViewById(R.id.title_detail);
@@ -133,8 +133,20 @@ public class DetailNewsActivity extends AppCompatActivity {
         favButton.setOnCheckStateChangeListener(new ShineButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
-                if (!news.fav && checked) Storage.addFav(getApplicationContext(), news.newsID);
-                else if (news.fav && !checked) Storage.removeNewsFromFav(getApplicationContext(), news.newsID);
+                if (!news.fav && checked) {
+                    System.out.println("[Debug.DetailNewsActivity]: add to fav List");
+                    Storage.addFav(getApplicationContext(), news.newsID);
+                    ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
+                    System.out.println("[Debug.DetailNewsActivity.Storage] after: FavoritesNewsList");
+                    for (String str : myList1) System.out.println("      " + str);
+                }
+                else if (news.fav && !checked) {
+                    System.out.println("[Debug.DetailNewsActivity]: remove from fav List");
+                    Storage.removeNewsFromFav(getApplicationContext(), news.newsID);
+                    ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
+                    System.out.println("[Debug.DetailNewsActivity.Storage] after: FavoritesNewsList");
+                    for (String str : myList1) System.out.println("      " + str);
+                }
                 news.fav = checked;
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
                 System.out.println("[DetailNewsActivity.getResultMsg()]: " + getResultMsg());
@@ -153,6 +165,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                 }
                 else {
                     try {
+                        System.out.println("[DEBUG] [DetailNewsActivity]: load image from local");
                         topImageView.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(getApplicationContext(), news.newsID)).images.get(0)));
                     } catch (Exception e) {
                         System.out.println("E [DetailNewsActivity.loadTitleImageFromLocal] : R.id.image not found");

@@ -190,7 +190,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         if (news.imageExist) {
             if (news.imageCount >= 2) {
                 boolean cannotLoadFromLocal = false;
-                if (news.read) {
+                if (news.read && Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID).images.size() >= 2) {
                     try {
                         ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(0)));
                         ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(1)));
@@ -207,7 +207,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             }
             else {
                 boolean cannotLoadFromLocal = false;
-                if (news.read) {
+                if (news.read && Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID).images.size() == 1) {
                     try {
                         holder.image.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(0)));
                         holder.image.setVisibility(View.VISIBLE);

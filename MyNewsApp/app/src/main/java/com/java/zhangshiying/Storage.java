@@ -72,7 +72,9 @@ public class Storage {
     public static ArrayList<String> findListValue(Context context, String key) {
         String msg = findValue(context, key);
         String[] myArray = msg.split(",");
-        return new ArrayList<>(Arrays.asList(myArray));
+        ArrayList<String> myList = new ArrayList<>(Arrays.asList(myArray));
+        if (myList.size() > 0 && Objects.equals(myList.get(0), "")) myList.remove(0);
+        return myList;
     }
 
     //return News, [key]=newsID
