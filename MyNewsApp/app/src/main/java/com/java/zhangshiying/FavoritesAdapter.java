@@ -59,9 +59,9 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.MyVi
         holder.setIsRecyclable(false);
         News news = Storage.findNewsValue(context.getApplicationContext(), favNewsList.get(pos));
 
-        holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_teal));
-        holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_teal)));
-        holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.teal_700)));
+        holder.card.setStrokeColor(ContextCompat.getColor(context, R.color.light_pink));
+        holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_pink)));
+        holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.dark_pink)));
 
         holder.title.setText(news.title);
         holder.category.setText(news.category);

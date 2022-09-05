@@ -94,8 +94,8 @@ public class SearchFragment extends Fragment {
                     endDate.set(Calendar.YEAR, 2022);
                     SlideDatePickerDialog.Builder builder = new SlideDatePickerDialog.Builder();
                     builder.setEndDate(endDate);
-                    builder.setThemeColor(getResources().getColor(R.color.blue, null)).setHeaderDateFormat("yyyy-MM-dd");
-                    builder.setLocale(Locale.CHINA);
+                    builder.setThemeColor(getResources().getColor(R.color.dark_pink, null)).setHeaderDateFormat("yyyy-MM-dd");
+                    builder.setLocale(Locale.ENGLISH);
                     SlideDatePickerDialog dialog = builder.build();
                     dialog.show(getActivity().getSupportFragmentManager(), "Dialog");
                     break;
@@ -107,8 +107,8 @@ public class SearchFragment extends Fragment {
                     endDate2.set(Calendar.YEAR, 2022);
                     SlideDatePickerDialog.Builder builder2 = new SlideDatePickerDialog.Builder();
                     builder2.setEndDate(endDate2);
-                    builder2.setThemeColor(getResources().getColor(R.color.blue, null)).setHeaderDateFormat("yyyy-MM-dd");
-                    builder2.setLocale(Locale.CHINA);
+                    builder2.setThemeColor(getResources().getColor(R.color.dark_pink, null)).setHeaderDateFormat("yyyy-MM-dd");
+                    builder2.setLocale(Locale.ENGLISH);
                     SlideDatePickerDialog dialog2 = builder2.build();
                     dialog2.show(getActivity().getSupportFragmentManager(), "Dialog");
                     break;

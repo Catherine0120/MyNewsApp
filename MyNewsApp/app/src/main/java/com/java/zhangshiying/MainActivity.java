@@ -182,14 +182,19 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                     String end_date = "endDate=" + tv2.getText();
 
                     String myTmpUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d";
-                    myTmpUrl = String.format(myTmpUrl, pageSize * 2 / searchFragment.categories.size());
+                    if (searchFragment.categories.size() != 0) myTmpUrl = String.format(myTmpUrl, pageSize * 2 / searchFragment.categories.size());
+                    else myTmpUrl = String.format(myTmpUrl, pageSize);
                     myTmpUrl = myTmpUrl + "&" + start_date + "&" + end_date + "&words=" + searchFragment.searchBar.getText();
                     for (String category : searchFragment.categories) {
                         String tmpUrl = myTmpUrl + "&categories=" + category;
                         loadPulse.setVisibility(View.VISIBLE);
                         getSearchFragment(tmpUrl, searchFragment.categories.size());
                     }
-
+                    if (searchFragment.categories.size() == 0) {
+                        String tmpUrl = myTmpUrl + "&categories=";
+                        loadPulse.setVisibility(View.VISIBLE);
+                        getSearchFragment(tmpUrl, 1);
+                    }
                 }
             }
         });

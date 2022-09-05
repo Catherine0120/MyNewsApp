@@ -8,9 +8,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 public class News {
     String newsID = "";
@@ -55,8 +57,10 @@ public class News {
             videoUrls = videoUrls.substring(1, videoUrls.length() - 1);
             if (videoUrls.length() == 0) return urls;
             else {
+                videoUrls = videoUrls.replaceAll("\\] \\[", ", ");
                 List<String> urlList = Arrays.asList(videoUrls.split(", "));
                 for (String str : urlList) { if (str.length() != 0) urls.add(str);}
+                urls = deduplicate(urls);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -73,8 +77,10 @@ public class News {
             imageUrls = imageUrls.substring(1, imageUrls.length() - 1);
             if (imageUrls.length() == 0) return urls;
             else {
+                imageUrls = imageUrls.replaceAll("\\] \\[", ", ");
                 List<String> urlList = Arrays.asList(imageUrls.split(", "));
                 for (String str : urlList) { if (!Objects.equals(str, "")) urls.add(str);}
+                urls = deduplicate(urls);
                 imageCount = urls.size();
             }
         } catch (JSONException e) {
@@ -82,6 +88,14 @@ public class News {
         }
         if (urls.size() != 0) imageExist = true;
         return urls;
+    }
+
+    private List<String> deduplicate(List<String> urlList) {
+        Set set = new HashSet();
+        List<String> listNew = new ArrayList<String>();
+        set.addAll(urlList);
+        listNew.addAll(set);
+        return listNew;
     }
 
     public static String getRandomString(int length) {

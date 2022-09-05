@@ -12,11 +12,12 @@
         android:id="@+id/rv_his"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"/>
+        android:layout_weight="1"
+        android:layout_margin="8dp"/>
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#B1BCC3"/>
+        android:layout_height="40dp"
+        android:background="@color/transparent"/>
 
 </LinearLayout>

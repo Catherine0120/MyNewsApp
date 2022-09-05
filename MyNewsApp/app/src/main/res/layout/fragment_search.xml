@@ -4,15 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E4000000"
+    android:background="#DA000000"
     tools:context=".SearchFragment">
 
     <com.mancj.materialsearchbar.MaterialSearchBar
         android:id="@+id/searchBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:mt_hint="Enter key word"
-        app:mt_searchBarColor="#F4EBF2"
+        app:mt_searchBarColor="#EEFBE7F7"
         app:mt_textColor="@color/black"
         app:mt_textCursorTint="@color/teal_700" />
 
@@ -21,7 +24,6 @@
         style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="160dp"
         android:layout_height="42dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
         android:text="Start Date"
         android:textColor="@drawable/select_btn_text_color"
@@ -30,17 +32,16 @@
         app:icon="@drawable/ic_date"
         app:iconPadding="0dp"
         app:iconTint="@drawable/select_btn_text_color"
-        app:strokeColor="@drawable/select_btn_stroke_color"
-        app:strokeWidth="1dp"
         app:layout_constraintStart_toStartOf="@+id/health"
-        app:layout_constraintTop_toBottomOf="@+id/culture" />
+        app:layout_constraintTop_toBottomOf="@+id/health"
+        app:strokeColor="@drawable/select_btn_stroke_color"
+        app:strokeWidth="1dp" />
 
     <Button
         android:id="@+id/end_date_btn"
         style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="160dp"
         android:layout_height="42dp"
-        android:layout_marginEnd="16dp"
         android:text="End Date"
         android:textColor="@drawable/select_btn_text_color"
         android:textSize="16sp"
@@ -48,10 +49,10 @@
         app:icon="@drawable/ic_date"
         app:iconPadding="0dp"
         app:iconTint="@drawable/select_btn_text_color"
-        app:strokeColor="@drawable/select_btn_stroke_color"
-        app:strokeWidth="1dp"
         app:layout_constraintBottom_toBottomOf="@+id/start_date_btn"
-        app:layout_constraintEnd_toEndOf="@+id/education" />
+        app:layout_constraintEnd_toEndOf="@+id/education"
+        app:strokeColor="@drawable/select_btn_stroke_color"
+        app:strokeWidth="1dp" />
 
     <TextView
         android:id="@+id/display_start_date"
@@ -76,10 +77,10 @@
     <Button
         android:id="@+id/society"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="312dp"
+        android:layout_marginEnd="288dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
@@ -104,9 +105,9 @@
     <Button
         android:id="@+id/tech"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
@@ -130,9 +131,9 @@
     <Button
         android:id="@+id/car"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
@@ -156,9 +157,9 @@
     <Button
         android:id="@+id/sports"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
@@ -182,9 +183,9 @@
     <Button
         android:id="@+id/finance"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
@@ -208,7 +209,7 @@
     <Button
         android:id="@+id/health"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
         android:layout_marginTop="10dp"
         android:checkable="true"
@@ -234,9 +235,9 @@
     <Button
         android:id="@+id/culture"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
@@ -260,9 +261,9 @@
     <Button
         android:id="@+id/entertain"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
@@ -286,9 +287,9 @@
     <Button
         android:id="@+id/military"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
@@ -312,9 +313,9 @@
     <Button
         android:id="@+id/education"
         style="@style/Widget.Material3.Button.ElevatedButton"
-        android:layout_width="68dp"
+        android:layout_width="64dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="8dp"
         android:checkable="true"
         android:elevation="20dp"
         android:fontFamily="@font/dengxian"
