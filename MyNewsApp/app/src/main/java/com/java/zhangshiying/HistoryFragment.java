@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class HistoryFragment extends Fragment {
-    private RecyclerView result;
+    public RecyclerView result;
     public HistoryAdapter myHistoryAdapter;
     private LinearLayoutManager myLayoutManager;
 
@@ -32,6 +32,8 @@ public class HistoryFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_history, container, false);
         myLayoutManager = new LinearLayoutManager(HistoryFragment.this.getContext());
+        myLayoutManager.setReverseLayout(true);
+        myLayoutManager.setStackFromEnd(true);
         result = view.findViewById(R.id.rv_his);
         result.setLayoutManager(myLayoutManager);
 

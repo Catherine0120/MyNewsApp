@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class FavoritesFragment extends Fragment {
-    private RecyclerView result;
+    public RecyclerView result;
     public FavoritesAdapter myFavoritesAdapter;
-    private LinearLayoutManager myLayoutManager;
+    public LinearLayoutManager myLayoutManager;
 
     public FavoritesFragment() {}
 
@@ -37,7 +37,8 @@ public class FavoritesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
-        myLayoutManager = new LinearLayoutManager(FavoritesFragment.this.getContext());
+        myLayoutManager = new LinearLayoutManager(FavoritesFragment.this.getContext(), LinearLayoutManager.VERTICAL, true);
+        myLayoutManager.setStackFromEnd(true);
         result = view.findViewById(R.id.rv_fav);
         result.setLayoutManager(myLayoutManager);
 

@@ -206,12 +206,14 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_discover_news:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
                         loadPulse.bringToFront();
                         loadPulse.setVisibility(View.VISIBLE);
                         getDiscoverFragment();
                         return true;
 
                     case R.id.menu_favorites:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
                         ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
                         System.out.println("[Storage]: FavoritesNewsList");
                         for (String str : myList1) System.out.println("      " + str);
@@ -222,6 +224,7 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                         return true;
 
                     case R.id.menu_history:
+                        getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
                         ArrayList<String> myList = Storage.findListValue(getApplicationContext(),"his");
                         System.out.println("[Storage]: HistoryNewsList");
                         for (String str : myList) System.out.println("      " + str
