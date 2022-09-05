@@ -165,6 +165,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     }
 
     @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final int pos = position;
         holder.setIsRecyclable(false);
@@ -353,7 +358,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     }
 
     public void addNewsList(ArrayList<News> newsList) {
-        this.newsList.addAll(newsList);
         notifyDataSetChanged();
     }
 

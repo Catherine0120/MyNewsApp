@@ -56,6 +56,7 @@ public class DiscoverFragment extends Fragment {
 
     private int pageSize;
 
+
     public enum State {
         DROP_AND_REFRESH, SCROLL_AND_LOAD
     }
@@ -164,6 +165,7 @@ public class DiscoverFragment extends Fragment {
         result.setLayoutManager(myLayoutManager);
         System.out.println("[DiscoverFragment.onCreateView => DiscoverAdapter]: newsList=" + newsList);
         myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager, launcher);
+        myDiscoverAdapter.setHasStableIds(true);
         result.setAdapter(myDiscoverAdapter);
         result.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -268,7 +270,6 @@ public class DiscoverFragment extends Fragment {
                 msg.obj = s;
                 msg.setData(bundle);
                 myHandler.sendMessage(msg);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

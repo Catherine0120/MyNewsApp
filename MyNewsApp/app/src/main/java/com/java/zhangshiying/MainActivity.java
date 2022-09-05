@@ -231,8 +231,8 @@ public class MainActivity extends AppCompatActivity {
                     myHandler.sendMessage(msg);
 
                 } catch (Exception e) {
-                    loadPulse.setVisibility(View.INVISIBLE);
                     Looper.prepare();
+                    loadPulse.setVisibility(View.INVISIBLE);
                     discoverFragment = new DiscoverFragment();
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
                     Toast.makeText(MainActivity.this, "Network Failure", Toast.LENGTH_SHORT).show();
@@ -265,8 +265,8 @@ public class MainActivity extends AppCompatActivity {
                     msg.what = 2;
                     myHandler.sendMessage(msg);
                 } catch (Exception e) {
-                    loadPulse.setVisibility(View.INVISIBLE);
                     Looper.prepare();
+                    loadPulse.setVisibility(View.INVISIBLE);
                     discoverFragment = new DiscoverFragment();
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
                     Toast.makeText(MainActivity.this, "Network Failure", Toast.LENGTH_SHORT).show();
