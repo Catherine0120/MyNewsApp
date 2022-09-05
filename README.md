@@ -19,6 +19,8 @@
 
 `[Log 2022/9/5 11:25]`：`Storage` branch基本debug完毕
 
+`[Log 2022/9/5 17:24]`：完成`SearchBar` 重绘
+
 
 
 -----------

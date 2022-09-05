@@ -1,34 +1,36 @@
 package com.java.zhangshiying;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.github.ybq.android.spinkit.SpinKitView;
 import com.mancj.materialsearchbar.MaterialSearchBar;
+import com.niwattep.materialslidedatepicker.SlideDatePickerDialog;
+import com.niwattep.materialslidedatepicker.SlideDatePickerDialogCallback;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Set;
 
 public class SearchFragment extends Fragment {
     Button techBtn, militaryBtn, societyBtn, healthBtn, entertainBtn, cultureBtn, educationBtn, financeBtn, sportsBtn, carBtn;
-    Button search;
-    SpinKitView loadSearch;
+    Button start_date_btn, end_date_btn;
+    TextView display_start_date, display_end_date;
     int techBtnCount = 0;
     int militaryBtnCount = 0;
     int societyBtnCount = 0;
@@ -40,17 +42,12 @@ public class SearchFragment extends Fragment {
     int sportsBtnCount = 0;
     int carBtnCount = 0;
 
-    private int pageSize;
+    MaterialSearchBar searchBar;
 
-    HashMap<String, EditText> textMap;
     Set<String> categories = new HashSet<String>();
-
-    String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d";
     String today;
 
-    public SearchFragment(int pageSize) {
-        this.pageSize = pageSize;
-    }
+    public SearchFragment() {}
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,33 +72,13 @@ public class SearchFragment extends Fragment {
         sportsBtn = (Button) view.findViewById(R.id.sports);    sportsBtn.setOnClickListener(myBtnOnClickListener);
         carBtn = (Button) view.findViewById(R.id.car);  carBtn.setOnClickListener(myBtnOnClickListener);
 
-        loadSearch = (SpinKitView) view.findViewById(R.id.load_search);
+        start_date_btn = (Button) view.findViewById(R.id.start_date_btn);   start_date_btn.setOnClickListener(myBtnOnClickListener);
+        end_date_btn = (Button) view.findViewById(R.id.end_date_btn);   end_date_btn.setOnClickListener(myBtnOnClickListener);
 
-        textMap = new HashMap<>();
-        textMap.put("words", view.findViewById(R.id.key_word_input));
-        textMap.put("start_date", view.findViewById(R.id.start_date_input));
-        textMap.put("end_date", view.findViewById(R.id.end_date_input));
-        ((EditText) view.findViewById(R.id.end_date_input)).setText(today);
+        display_start_date = (TextView) view.findViewById(R.id.display_start_date);
+        display_end_date = (TextView) view.findViewById(R.id.display_end_date);
 
-        search = (Button) view.findViewById(R.id.search_btn);
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ArrayList<String> params = new ArrayList<>();
-                for (Map.Entry<String, EditText> entry : textMap.entrySet()) {
-                    params.add(entry.getKey() + "=" + entry.getValue().getText().toString());
-                }
-                myUrl = String.format(myUrl, pageSize * 2 / categories.size());
-                myUrl = myUrl + "&" + TextUtils.join("&", params);
-                for (String category : categories) {
-                    String tmpUrl = myUrl + "&categories=" + category;
-//                    loadSearch.setVisibility(View.VISIBLE);
-                    ((MainActivity) getActivity()).getSearchFragment(tmpUrl, categories.size());
-                }
-                myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d";
-//                loadSearch.setVisibility(View.INVISIBLE);
-            }
-        });
+        searchBar = (MaterialSearchBar) view.findViewById(R.id.searchBar);
 
         return view;
     }
@@ -110,6 +87,32 @@ public class SearchFragment extends Fragment {
         @Override
         public void onClick(View view) {
             switch(view.getId()) {
+                case R.id.start_date_btn:
+                    MainActivity.startDate = true;
+                    start_date_btn.setSelected(true);
+                    Calendar endDate = Calendar.getInstance();
+                    endDate.set(Calendar.YEAR, 2022);
+                    SlideDatePickerDialog.Builder builder = new SlideDatePickerDialog.Builder();
+                    builder.setEndDate(endDate);
+                    builder.setThemeColor(getResources().getColor(R.color.blue, null)).setHeaderDateFormat("yyyy-MM-dd");
+                    builder.setLocale(Locale.CHINA);
+                    SlideDatePickerDialog dialog = builder.build();
+                    dialog.show(getActivity().getSupportFragmentManager(), "Dialog");
+                    break;
+
+                case R.id.end_date_btn:
+                    MainActivity.startDate = false;
+                    end_date_btn.setSelected(true);
+                    Calendar endDate2 = Calendar.getInstance();
+                    endDate2.set(Calendar.YEAR, 2022);
+                    SlideDatePickerDialog.Builder builder2 = new SlideDatePickerDialog.Builder();
+                    builder2.setEndDate(endDate2);
+                    builder2.setThemeColor(getResources().getColor(R.color.blue, null)).setHeaderDateFormat("yyyy-MM-dd");
+                    builder2.setLocale(Locale.CHINA);
+                    SlideDatePickerDialog dialog2 = builder2.build();
+                    dialog2.show(getActivity().getSupportFragmentManager(), "Dialog");
+                    break;
+
                 case R.id.tech:
                     techBtnCount++;
                     if (techBtnCount % 2 == 1) categories.add("科技");

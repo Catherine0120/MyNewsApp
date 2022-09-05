@@ -12,16 +12,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationBarView;
+import com.niwattep.materialslidedatepicker.SlideDatePickerDialogCallback;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,14 +38,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  implements SlideDatePickerDialogCallback  {
 
     private BottomAppBar myBottomAppBar;
     private BottomNavigationView myBottomNavigationView;
-    private FloatingActionButton myFloatingActionButton;
+    public FloatingActionButton myFloatingActionButton;
+
+    public static boolean startDate = true;
+    public static boolean searchButton = false;
 
     public static int currentPage = 1;
 
@@ -49,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     public SearchFragment searchFragment;
     public FavoritesFragment favoritesFragment;
     public HistoryFragment historyFragment;
+    public FragmentBlank blankFragment;
     private View loadPulse;
 
     static final int pageSize = 20;
@@ -106,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
                     if (total == tmpCount) {
                         if (tmpNewsDescriptionList.size() == 0) Toast.makeText(MainActivity.this, "Sorry, no result matches your search...", Toast.LENGTH_LONG).show();
                         discoverFragment = new DiscoverFragment(tmpNewsDescriptionList, MainActivity.this, min(tmpNewsDescriptionList.size(), 20), 1, urls);
+                        loadPulse.setVisibility(View.INVISIBLE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
                         tmpNewsDescriptionList.clear();
                         tmpCount = 0;
@@ -124,6 +136,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    public void onPositiveClick(int date, int month, int year, Calendar calendar) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        if (startDate) searchFragment.display_start_date.setText(format.format(calendar.getTime()));
+        else searchFragment.display_end_date.setText(format.format(calendar.getTime()));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -138,17 +157,40 @@ public class MainActivity extends AppCompatActivity {
         myBottomAppBar = findViewById(R.id.bottom_app_bar);
         setSupportActionBar(myBottomAppBar);
 
-        searchFragment = new SearchFragment(pageSize);
+        searchFragment = new SearchFragment();
         favoritesFragment = new FavoritesFragment();
         historyFragment = new HistoryFragment();
+        blankFragment = new FragmentBlank();
 
         myFloatingActionButton = findViewById(R.id.search_action_button);
         myFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment, searchFragment).commit();
-                myBottomNavigationView.getMenu().getItem(3).setChecked(true); //blank_item
+                if (!searchButton) {
+                    searchButton = !searchButton;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, searchFragment).commit();
+                    myBottomNavigationView.getMenu().getItem(3).setChecked(true); //blank_item
+                }
+                else {
+                    searchButton = !searchButton;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
+                    myBottomNavigationView.getMenu().getItem(0).setChecked(true); //blank_item
 
+                    TextView tv1 = searchFragment.display_start_date;
+                    TextView tv2 = searchFragment.display_end_date;
+                    String start_date = "startDate=" + tv1.getText();
+                    String end_date = "endDate=" + tv2.getText();
+
+                    String myTmpUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d";
+                    myTmpUrl = String.format(myTmpUrl, pageSize * 2 / searchFragment.categories.size());
+                    myTmpUrl = myTmpUrl + "&" + start_date + "&" + end_date + "&words=" + searchFragment.searchBar.getText();
+                    for (String category : searchFragment.categories) {
+                        String tmpUrl = myTmpUrl + "&categories=" + category;
+                        loadPulse.setVisibility(View.VISIBLE);
+                        getSearchFragment(tmpUrl, searchFragment.categories.size());
+                    }
+
+                }
             }
         });
 
