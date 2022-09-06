@@ -12,6 +12,17 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
+<!--        <com.google.android.material.tabs.TabLayout-->
+<!--            android:id="@+id/tab_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="40dp"/>-->
+
+<!--        <androidx.viewpager2.widget.ViewPager2-->
+<!--            android:id="@+id/pager"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_marginTop="40dp"-->
+<!--            android:layout_height="match_parent" />-->
+
         <fragment
             android:id="@+id/fragment"
             android:name="com.java.zhangshiying.DiscoverFragment"
@@ -30,9 +41,9 @@
             android:layout_height="58dp"
             android:backgroundTint="@color/light_blue"
             android:layout_gravity="bottom"
-            app:fabCradleMargin="7dp"
+            app:fabCradleMargin="5dp"
             app:fabAlignmentMode="end"
-            app:fabCradleRoundedCornerRadius="50dp"
+            app:fabCradleRoundedCornerRadius="48dp"
             app:titleMargin="0dp">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -61,7 +72,7 @@
             android:clickable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:elevation="15dp"
+            android:elevation="18dp"
             android:backgroundTint="@color/teal_700"
             android:src="@drawable/ic_search"
             app:tint="@color/white"

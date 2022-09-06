@@ -166,6 +166,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/textCategory" />
 
             <TextView
+                android:id="@+id/blank"
                 android:layout_width="match_parent"
                 android:layout_height="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -182,7 +183,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/image"
+                app:layout_constraintTop_toBottomOf="@+id/blank"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
 

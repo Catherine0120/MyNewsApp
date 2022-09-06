@@ -216,10 +216,10 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
                         ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
                         System.out.println("[Storage]: FavoritesNewsList");
-                        for (String str : myList1) System.out.println("      " + str);
-                        for (String str : myList1) System.out.println("      " + str
-                                + ", title=" + Storage.findNewsValue(getApplicationContext(), str).title
-                                + ", imagesSize=" + Storage.findNewsValue(getApplicationContext(), str).images.size());
+//                        for (String str : myList1) System.out.println("      " + str);
+//                        for (String str : myList1) System.out.println("      " + str
+//                                + ", title=" + Objects.requireNonNull(Storage.findNewsValue(getApplicationContext(), str)).title
+//                                + ", imagesSize=" + Objects.requireNonNull(Storage.findNewsValue(getApplicationContext(), str)).images.size());
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, favoritesFragment).commit();
                         return true;
 
@@ -227,9 +227,9 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
                         ArrayList<String> myList = Storage.findListValue(getApplicationContext(),"his");
                         System.out.println("[Storage]: HistoryNewsList");
-                        for (String str : myList) System.out.println("      " + str
-                                + ", title=" + Storage.findNewsValue(getApplicationContext(), str).title
-                                + ", imagesSize=" + Storage.findNewsValue(getApplicationContext(), str).images.size());
+//                        for (String str : myList) System.out.println("      " + str
+//                                + ", title=" + Objects.requireNonNull(Storage.findNewsValue(getApplicationContext(), str)).title
+//                                + ", imagesSize=" + Objects.requireNonNull(Storage.findNewsValue(getApplicationContext(), str)).images.size());
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, historyFragment).commit();
                         return true;
                 }

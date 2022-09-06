@@ -37,6 +37,13 @@ public class News {
             if (this.newsID.equals("")) {
                 this.newsID = getRandomString(44);
             }
+            News news_tmp = newsInHistory(newsID);
+            if (news_tmp != null) {
+                this.fav = news_tmp.fav;
+                this.like = news_tmp.like;
+                this.read = true;
+                this.readDetail = true;
+            }
             this.title = news.getString("title");
             this.category = news.getString("category");
             this.origin = news.getString("publisher");
@@ -47,6 +54,10 @@ public class News {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private News newsInHistory(String newsID) {
+        return Storage.findNewsValue(GlobalApplication.getAppContext(), newsID);
     }
 
     private List<String> getVideo(JSONObject news) {

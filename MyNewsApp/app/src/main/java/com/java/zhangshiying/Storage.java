@@ -80,6 +80,7 @@ public class Storage {
     //return News, [key]=newsID
     public static News findNewsValue(Context context, String newsID) {
         String msg = findValue(context, newsID);
+        if (Objects.equals(msg, "")) return null;
         return new GsonBuilder().create().fromJson(msg, News.class);
     }
 
