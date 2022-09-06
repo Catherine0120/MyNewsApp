@@ -81,7 +81,7 @@ public class CategoryFragment extends Fragment {
                         LinearLayoutManager myLayoutManager = new LinearLayoutManager(CategoryFragment.this.getContext());
                         result.setLayoutManager(myLayoutManager);
                         myCategoryAdapter = new CategoryFragmentAdapter(newsList, mainActivityContext, CategoryFragment.this, myLayoutManager, launcher);
-                        myCategoryAdapter.setHasStableIds(true);
+//                        myCategoryAdapter.setHasStableIds(true);
                         result.setAdapter(myCategoryAdapter);
                         loadPulse.setVisibility(View.INVISIBLE);
                     } catch (Exception e) {
@@ -102,7 +102,7 @@ public class CategoryFragment extends Fragment {
                             result.setLayoutManager(myLayoutManager);
                             newsList = newsDescriptionList;
                             myCategoryAdapter = new CategoryFragmentAdapter(newsDescriptionList, mainActivityContext, CategoryFragment.this, myLayoutManager, launcher);
-                            myCategoryAdapter.setHasStableIds(true);
+//                            myCategoryAdapter.setHasStableIds(true);
                             result.setAdapter(myCategoryAdapter);
                         }
                         else { //SCROLL_AND_LOAD
