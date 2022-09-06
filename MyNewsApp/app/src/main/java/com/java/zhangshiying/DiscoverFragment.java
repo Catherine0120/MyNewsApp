@@ -38,8 +38,6 @@ import java.util.Date;
 import java.util.Objects;
 
 public class DiscoverFragment extends Fragment {
-
-    int condition = 0; //状态参数为“0”表示“discover”， 状态参数为“1”表示“search”
     private ArrayList<String> urlsFromSearch;
     private ArrayList<News> tmpNewsList = new ArrayList<>();
     int tmpCount = 0;
@@ -54,7 +52,6 @@ public class DiscoverFragment extends Fragment {
 
     private DiscoverAdapter myDiscoverAdapter;
 
-    private int pageSize;
 
 
     public enum State {
@@ -82,25 +79,16 @@ public class DiscoverFragment extends Fragment {
                 newsList.addAll(newsDescriptionList);
 
                 if (msg.getData().getInt("state") == 0) { //DROP_AND_REFRESH
-                    if (condition == 0) { //discover
+                    tmpCount++;
+                    tmpNewsList.addAll(newsDescriptionList);
+                    if (tmpCount == urlsFromSearch.size()) {
                         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
                         result.setLayoutManager(myLayoutManager);
-                        newsList = newsDescriptionList;
-                        myDiscoverAdapter = new DiscoverAdapter(newsDescriptionList, context, DiscoverFragment.this, myLayoutManager, launcher);
+                        newsList = tmpNewsList;
+                        myDiscoverAdapter = new DiscoverAdapter(tmpNewsList, context, DiscoverFragment.this, myLayoutManager, launcher);
                         result.setAdapter(myDiscoverAdapter);
-                    }
-                    else { //search
-                        tmpCount++;
-                        tmpNewsList.addAll(newsDescriptionList);
-                        if (tmpCount == urlsFromSearch.size()) {
-                            LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
-                            result.setLayoutManager(myLayoutManager);
-                            newsList = tmpNewsList;
-                            myDiscoverAdapter = new DiscoverAdapter(tmpNewsList, context, DiscoverFragment.this, myLayoutManager, launcher);
-                            result.setAdapter(myDiscoverAdapter);
-                            tmpCount = 0;
-                            tmpNewsList.clear();
-                        }
+                        tmpCount = 0;
+                        tmpNewsList.clear();
                     }
                 }
                 else { //SCROLL_AND_LOAD
@@ -118,15 +106,12 @@ public class DiscoverFragment extends Fragment {
     private final DiscoverFragment.MainHandler myHandler = new DiscoverFragment.MainHandler(this);
 
 
-
     public DiscoverFragment() {}
 
-    public DiscoverFragment(ArrayList<News> newsList, MainActivity activity, int pageSize, int condition, ArrayList<String> urls) {
+    public DiscoverFragment(ArrayList<News> newsList, MainActivity activity, ArrayList<String> urls) {
         this.newsList = (ArrayList<News>) newsList.clone();
         if (urls != null) this.urlsFromSearch = (ArrayList<String>) urls.clone();
         this.context = activity;
-        this.pageSize = pageSize;
-        this.condition = condition;
     }
 
     @Override
@@ -159,7 +144,6 @@ public class DiscoverFragment extends Fragment {
                 }.start();
             }
         });
-
 
         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
         result.setLayoutManager(myLayoutManager);
@@ -240,18 +224,22 @@ public class DiscoverFragment extends Fragment {
 
 
     private void getNewsList(State state) {
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String today = simpleDateFormat.format(date);
-
-        if (condition == 0) {
-            String myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=&page=%d";
-            myUrl = String.format(myUrl, pageSize, today, ++MainActivity.currentPage);
-            Storage.write(context.getApplicationContext(), "currentDiscoverPage", String.valueOf(MainActivity.currentPage));
-            System.out.println("[DiscoverFragment]: URL=" + myUrl);
-            String s = "";
+        String s = "";
+        String tmpUrl = "";
+        for (int i = 0; i < urlsFromSearch.size(); ++i) {
+            String str = urlsFromSearch.get(i);
+            if (getQueryString(str, "page") == null) {
+                tmpUrl = str + "&page=2";
+                urlsFromSearch.set(i, str + "&page=2");
+            }
+            else {
+                int currentPage = Integer.parseInt(getQueryString(str, "page"));
+                tmpUrl = replace(str, "page", Integer.toString(++currentPage));
+                urlsFromSearch.set(i, tmpUrl);
+            }
+            System.out.println("[SearchFragment]" + tmpUrl);
             try {
-                URL url  = new URL(myUrl);
+                URL url  = new URL(tmpUrl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setConnectTimeout(5000);
@@ -270,53 +258,11 @@ public class DiscoverFragment extends Fragment {
                 msg.obj = s;
                 msg.setData(bundle);
                 myHandler.sendMessage(msg);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
-        else if (condition == 1) {
-            String s = "";
-            String tmpUrl = "";
-            for (int i = 0; i < urlsFromSearch.size(); ++i) {
-                String str = urlsFromSearch.get(i);
-                if (getQueryString(str, "page") == null) {
-                    tmpUrl = str + "&page=2";
-                    urlsFromSearch.set(i, str + "&page=2");
-                }
-                else {
-                    int currentPage = Integer.parseInt(getQueryString(str, "page"));
-                    tmpUrl = replace(str, "page", Integer.toString(++currentPage));
-                    urlsFromSearch.set(i, tmpUrl);
-                }
-                System.out.println("[SearchFragment]" + tmpUrl);
-                try {
-                    URL url  = new URL(tmpUrl);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("GET");
-                    conn.setConnectTimeout(5000);
-                    InputStream inputStream = conn.getInputStream();
-                    s = readFromStream(inputStream);
-                    Message msg = new Message();
-                    Bundle bundle = new Bundle();
-                    switch(state) {
-                        case DROP_AND_REFRESH:
-                            bundle.putInt("state", 0);
-                            break;
-                        case SCROLL_AND_LOAD:
-                            bundle.putInt("state", 1);
-                            break;
-                    }
-                    msg.obj = s;
-                    msg.setData(bundle);
-                    myHandler.sendMessage(msg);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
     }
 
     private String readFromStream(InputStream inStream) {

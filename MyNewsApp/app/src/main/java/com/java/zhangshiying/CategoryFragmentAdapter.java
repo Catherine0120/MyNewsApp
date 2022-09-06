@@ -1,11 +1,10 @@
 package com.java.zhangshiying;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,51 +13,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MediaController;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
-import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
-public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyViewHolder> {
+public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragmentAdapter.MyViewHolder> {
     Context mainActivityContext;
     Fragment fragmentContext;
     LinearLayoutManager myLayoutManager;
 
-    ArrayList<News> newsList = new ArrayList<>();
+    ArrayList<News> newsList;
     View view;
 
     ActivityResultLauncher<String> launcher;
 
-    private class DiscoverHandler extends Handler {
-        private final WeakReference<DiscoverFragment> myFragment;
-        public DiscoverHandler(DiscoverFragment fragment) {
-            myFragment = new WeakReference<DiscoverFragment>(fragment);
+    private class CategoryHandler extends Handler {
+        private final WeakReference<CategoryFragment> myFragment;
+        public CategoryHandler(CategoryFragment fragment) {
+            myFragment = new WeakReference<CategoryFragment>(fragment);
         }
 
         HashMap<Integer, Bitmap> myMap = new HashMap<>(); //<position, image>
@@ -75,7 +63,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         iv.setImageBitmap((Bitmap)msg.obj);
                     } catch (Exception e) {
 //                        e.printStackTrace();
-                        System.out.println("[DiscoverAdapter.handleTitleImage] pos=" + pos + ": R.id.image not found");
+                        System.out.println("[CategoryAdapter.handleTitleImage] pos=" + pos + ": R.id.image not found");
                         Log.e("loadImage", "error");
                     }
                     break;
@@ -86,7 +74,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         images = (LinearLayout) myLayoutManager.findViewByPosition(pos_case_2).findViewById(R.id.images);
                     } catch (Exception e) {
 //                        e.printStackTrace();
-                        System.out.println("[DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": R.id.images not found");
+                        System.out.println("[CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": R.id.images not found");
                         break;
                     }
                     if (myMap.containsKey(pos_case_2)
@@ -101,7 +89,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                             myMap.remove(pos_case_2);
                         } catch (Exception e) {
 //                            e.printStackTrace();
-                            System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_2 error");
+                            System.out.println("E [CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_2 error");
                             Log.e("loadImage2", "error");
                         }
                     }
@@ -111,7 +99,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                             mapHelper.put(pos_case_2, msg.getData().getInt("label"));
                         } catch (Exception e) {
 //                            e.printStackTrace();
-                            System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_1 error");
+                            System.out.println("E [CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_1 error");
                             Log.e("loadImage1", "error");
                         }
                     }
@@ -122,17 +110,15 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         }
     }
 
-    private final DiscoverHandler myHandler = new DiscoverHandler((DiscoverFragment) fragmentContext);
+    private final CategoryFragmentAdapter.CategoryHandler myHandler = new CategoryFragmentAdapter.CategoryHandler((CategoryFragment) fragmentContext);
 
-
-
-    public DiscoverAdapter(ArrayList<News> newsList, Context context, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher<String> launcher) {
-        this.mainActivityContext = context;
+    public CategoryFragmentAdapter(ArrayList<News> newsList, Context mainActivityContext, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher<String> launcher) {
         this.newsList = newsList;
+        this.mainActivityContext = mainActivityContext;
         this.fragmentContext = fragment;
         this.myLayoutManager = myLayoutManager;
         this.launcher = launcher;
-        System.out.println("[DiscoverAdapter.Constructor]: newsList = " + newsList);
+        System.out.println("[CategoryAdapter.Constructor]: newsList = " + newsList);
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -160,29 +146,20 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = View.inflate(mainActivityContext, R.layout.news_card_layout, null);
-        return new MyViewHolder(view);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
+        view = View.inflate(fragmentContext.getContext(), R.layout.news_card_layout, null);
+        return new CategoryFragmentAdapter.MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final int pos = position;
+        int pos = position;
         holder.setIsRecyclable(false);
         News news = newsList.get(position);
         if (news.read) {
-            holder.card.setStrokeColor(ContextCompat.getColor(mainActivityContext, R.color.light_grey));
-            holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.light_grey)));
-            holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.dark_grey)));
+            holder.card.setStrokeColor(Color.parseColor("#DCDADA"));
+            holder.card.setRippleColorResource(R.color.light_grey);
+            holder.category.setTextColor(Color.parseColor("#6F6F70"));
         }
-        holder.card.setStrokeColor(ContextCompat.getColor(mainActivityContext, R.color.light_teal));
-        holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.light_teal)));
-        holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.teal_700)));
-
         holder.title.setText(news.title);
         holder.category.setText(news.category);
         holder.origin.setText(news.origin);
@@ -190,8 +167,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         holder.closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newsList.remove(pos);
-                notifyItemRemoved(pos);
+                newsList.remove(holder.getAdapterPosition());
+                notifyItemRemoved(holder.getAdapterPosition());
                 notifyDataSetChanged();
             }
         });
@@ -199,14 +176,14 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         if (news.imageExist) {
             if (news.imageCount >= 2) {
                 boolean cannotLoadFromLocal = false;
-                if (news.read && Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID).images.size() >= 2) {
+                if (news.read && Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID).images.size() >= 2) {
                     try {
-                        ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(0)));
-                        ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(1)));
+                        ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(0)));
+                        ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(1)));
                         holder.images.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         cannotLoadFromLocal = true;
-                        System.out.println("E [DiscoverAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
+                        System.out.println("E [CategoryAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
                         e.printStackTrace();
                     }
                 }
@@ -216,13 +193,13 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             }
             else {
                 boolean cannotLoadFromLocal = false;
-                if (news.read && Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID).images.size() == 1) {
+                if (news.read && Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID).images.size() == 1) {
                     try {
-                        holder.image.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(mainActivityContext.getApplicationContext(), news.newsID)).images.get(0)));
+                        holder.image.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(0)));
                         holder.image.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         cannotLoadFromLocal = true;
-                        System.out.println("E [DiscoverAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
+                        System.out.println("E [CategoryAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
                         e.printStackTrace();
                     }
                 }
@@ -238,16 +215,15 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
             public void onClick(View view) {
                 if (!news.read) {
                     news.read = true;
-                    Storage.addHis(mainActivityContext.getApplicationContext(), news.newsID);
+                    Storage.addHis(GlobalApplication.getAppContext(), news.newsID);
                 }
                 else news.readDetail = true;
-                Storage.write(mainActivityContext.getApplicationContext(), news.newsID, Storage.newsToString(news));
-                System.out.println("[DiscoverAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
+                Storage.write(GlobalApplication.getAppContext(), news.newsID, Storage.newsToString(news));
+                System.out.println("[CategoryAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
                 launcher.launch(news.newsID + "," + pos);
             }
         });
     }
-
 
     private void getBitmapFromURL(String src, String src2, int pos, boolean twoImages) {
         if (!twoImages) {
@@ -275,7 +251,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        System.out.println("[DiscoverAdapter]: [" + pos + "] ERROR src = " + src);
+                        System.out.println("[CategoryAdapter]: [" + pos + "] ERROR src = " + src);
                         Log.e("Exception",e.getMessage());
                     }
                 }
@@ -308,7 +284,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        System.out.println("[DiscoverAdapter]: [" + pos + "]: ERROR src1 = " + src);
+                        System.out.println("[CategoryAdapter]: [" + pos + "]: ERROR src1 = " + src);
                         Log.e("Exception (image_1)",e.getMessage());
                     }
                 }
@@ -339,7 +315,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        System.out.println("[DiscoverAdapter]: [" + pos + "]: ERROR src2 = " + src2);
+                        System.out.println("[CategoryAdapter]: [" + pos + "]: ERROR src2 = " + src2);
                         Log.e("Exception (image_2)",e.getMessage());
                     }
                 }
@@ -348,21 +324,10 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         }
     }
 
-    private void castVideo (VideoView vv) {
-        MediaController mediaController = new MediaController(mainActivityContext);
-        mediaController.setAnchorView(vv);
-        mediaController.setMediaPlayer(vv);
-        vv.setMediaController(mediaController);
-        vv.start();
-    }
-
     @Override
     public int getItemCount() {
         return newsList == null ? 0 : newsList.size();
     }
 
-    public void addNewsList(ArrayList<News> newsList) {
-        notifyDataSetChanged();
-    }
-
+    public void notifyChanged() {notifyDataSetChanged();}
 }

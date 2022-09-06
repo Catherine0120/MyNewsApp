@@ -53,22 +53,23 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
     public static boolean startDate = true;
     public static boolean searchButton = false;
 
-    public static int currentPage = 1;
+    public static int[] currentPage = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    public static boolean[] firstLoad= {true, true, true, true, true, true, true, true, true, true, true};
 
     public DiscoverFragment discoverFragment;
     public SearchFragment searchFragment;
     public FavoritesFragment favoritesFragment;
     public HistoryFragment historyFragment;
     public FragmentBlank blankFragment;
+    public FragmentBlank2 blankFragment2;
+    public CollectionFragment collectionFragment;
     private View loadPulse;
 
     static final int pageSize = 20;
-    boolean firstLoad = true;
 
     ArrayList<News> tmpNewsDescriptionList = new ArrayList<>();
     ArrayList<String> urls = new ArrayList<>();
     int tmpCount = 0;
-    String today = "";
 
     private class MainHandler extends Handler {
         private final WeakReference<MainActivity> myParent;
@@ -79,33 +80,14 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
         @Override
         public void handleMessage(@NonNull Message msg) {
             switch(msg.what) {
-                case 1: //navigation-switch-to-discoverFragment
-                    String message = msg.obj.toString();
-                    try {
-                        JSONObject obj = new JSONObject(message);
-                        JSONArray newsDescriptions = obj.getJSONArray("data");
-                        ArrayList<News> newsDescriptionList = new ArrayList<>();
-                        for (int i = 0; i < newsDescriptions.length(); ++i) {
-                            JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
-                            newsDescriptionList.add(new News(singleNewsDescription));
-                        }
-                        System.out.println("[MainActivity.FirstCreate => DiscoverFragment]" + newsDescriptionList);
-                        discoverFragment = new DiscoverFragment(newsDescriptionList, MainActivity.this, pageSize, 0, null);
-                        loadPulse.setVisibility(View.INVISIBLE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    break;
                 case 2: //searchFragment-switch-to-discoverFragment
                     tmpCount++;
-                    String message_case_2 = msg.obj.toString();
+                    String message = msg.obj.toString();
                     int total = msg.getData().getInt("total");
                     String url = msg.getData().getString("url");
                     urls.add(url);
                     try {
-                        JSONObject obj = new JSONObject(message_case_2);
+                        JSONObject obj = new JSONObject(message);
                         JSONArray newsDescriptions = obj.getJSONArray("data");
                         for (int i = 0; i < newsDescriptions.length(); ++i) {
                             JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
@@ -116,7 +98,7 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                     }
                     if (total == tmpCount) {
                         if (tmpNewsDescriptionList.size() == 0) Toast.makeText(MainActivity.this, "Sorry, no result matches your search...", Toast.LENGTH_LONG).show();
-                        discoverFragment = new DiscoverFragment(tmpNewsDescriptionList, MainActivity.this, min(tmpNewsDescriptionList.size(), 20), 1, urls);
+                        discoverFragment = new DiscoverFragment(tmpNewsDescriptionList, MainActivity.this, urls);
                         loadPulse.setVisibility(View.INVISIBLE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
                         tmpNewsDescriptionList.clear();
@@ -146,21 +128,18 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        loadPulse = findViewById(R.id.spin_kit_main);
-        loadPulse.bringToFront();
-        loadPulse.setVisibility(View.VISIBLE);
 
-        initApplication();
-
-        getDiscoverFragment();
-
-        myBottomAppBar = findViewById(R.id.bottom_app_bar);
-        setSupportActionBar(myBottomAppBar);
-
+        collectionFragment = new CollectionFragment(MainActivity.this);
         searchFragment = new SearchFragment();
         favoritesFragment = new FavoritesFragment();
         historyFragment = new HistoryFragment();
         blankFragment = new FragmentBlank();
+        blankFragment2 = new FragmentBlank2();
+
+        loadPulse = findViewById(R.id.spin_kit_main);
+
+        myBottomAppBar = findViewById(R.id.bottom_app_bar);
+        setSupportActionBar(myBottomAppBar);
 
         myFloatingActionButton = findViewById(R.id.search_action_button);
         myFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -207,29 +186,16 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                 switch (item.getItemId()) {
                     case R.id.menu_discover_news:
                         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
-                        loadPulse.bringToFront();
-                        loadPulse.setVisibility(View.VISIBLE);
-                        getDiscoverFragment();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, collectionFragment).commit();
                         return true;
 
                     case R.id.menu_favorites:
                         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
-                        ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
-                        System.out.println("[Storage]: FavoritesNewsList");
-//                        for (String str : myList1) System.out.println("      " + str);
-//                        for (String str : myList1) System.out.println("      " + str
-//                                + ", title=" + Objects.requireNonNull(Storage.findNewsValue(getApplicationContext(), str)).title
-//                                + ", imagesSize=" + Objects.requireNonNull(Storage.findNewsValue(getApplicationContext(), str)).images.size());
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, favoritesFragment).commit();
                         return true;
 
                     case R.id.menu_history:
                         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
-                        ArrayList<String> myList = Storage.findListValue(getApplicationContext(),"his");
-                        System.out.println("[Storage]: HistoryNewsList");
-//                        for (String str : myList) System.out.println("      " + str
-//                                + ", title=" + Objects.requireNonNull(Storage.findNewsValue(getApplicationContext(), str)).title
-//                                + ", imagesSize=" + Objects.requireNonNull(Storage.findNewsValue(getApplicationContext(), str)).images.size());
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, historyFragment).commit();
                         return true;
                 }
@@ -237,60 +203,6 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
             }
         });
 
-    }
-
-    private void initApplication() {
-        Date date = new Date(System.currentTimeMillis());
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        today = simpleDateFormat.format(date);
-        System.out.println("[debug]: today=" + today);
-
-        if (Objects.equals(Storage.findValue(getApplicationContext(), "today"), today))
-            currentPage = Integer.parseInt(Storage.findValue(getApplicationContext(), "currentDiscoverPage"));
-
-        if (currentPage != 1) firstLoad = false;
-    }
-
-    private void getDiscoverFragment() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String myUrl = "";
-                if (firstLoad) myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=";
-                else {
-                    myUrl = "https://api2.newsminer.net/svc/news/queryNewsList?size=%d&startDate=&endDate=%s&words=&categories=&page=%d";
-                    currentPage++;
-                }
-                firstLoad = false;
-                Storage.write(getApplicationContext(), "currentDiscoverPage", Integer.toString(currentPage));
-                Storage.write(getApplicationContext(), "today", today);
-                myUrl = String.format(myUrl, pageSize, today, currentPage);
-                System.out.println(myUrl);
-                String s = "";
-                try {
-                    URL url  = new URL(myUrl);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("GET");
-                    conn.setConnectTimeout(5000);
-                    InputStream inputStream = conn.getInputStream();
-                    s = readFromStream(inputStream);
-                    System.out.println("[MainActivity.crawl]: s = " + s);
-                    Message msg = new Message();
-                    msg.obj = s;
-                    msg.what = 1;
-                    myHandler.sendMessage(msg);
-
-                } catch (Exception e) {
-                    Looper.prepare();
-                    loadPulse.setVisibility(View.INVISIBLE);
-                    discoverFragment = new DiscoverFragment();
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
-                    Toast.makeText(MainActivity.this, "Network Failure", Toast.LENGTH_SHORT).show();
-                    Looper.loop();
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     public void getSearchFragment(String myUrl, int total) {
@@ -326,9 +238,6 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
             }
         }).start();
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu (Menu menu) {

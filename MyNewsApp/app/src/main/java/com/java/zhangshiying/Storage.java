@@ -23,7 +23,7 @@ public class Storage {
 
     /*
     ==[key, value]==
-    ["currentDiscoverPage", String currentPage]
+    ["currentDiscoverPage", String currentPage] => ["currentPage", String[] currentPages]
     ["today" String today]
     ["fav", String[] newsIDs], join by ','
     ["his", String[] newsIDs], join by ','
@@ -84,6 +84,21 @@ public class Storage {
         return new GsonBuilder().create().fromJson(msg, News.class);
     }
 
+    public static int findPageValue(Context context, int category) {
+        String msg = findValue(context, "currentPage");
+        String[] pageList = msg.split(",");
+        return Integer.parseInt(pageList[category]);
+    }
+
+    public static String updateCurrentPage(int[] curPage) {
+        assert (curPage.length == 11);
+        String result = "";
+        for (int i = 0; i < 11; ++i) {
+            result = result + String.valueOf(curPage[i]) + ",";
+        }
+        return result;
+    }
+
     public static boolean clear(Context context, String key) {
         SharedPreferences prefs = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -95,6 +110,10 @@ public class Storage {
         SharedPreferences prefs = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         return prefs.contains(key);
     }
+
+
+
+
 
     public static Bitmap stringToBitmap(String image) {
         try {
