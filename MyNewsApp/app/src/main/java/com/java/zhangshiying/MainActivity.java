@@ -183,10 +183,14 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
         myBottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                searchButton = false;
                 switch (item.getItemId()) {
                     case R.id.menu_discover_news:
+                        System.out.println("1");
                         getSupportFragmentManager().beginTransaction().replace(R.id.search_fragment, blankFragment).commit();
+                        System.out.println("2");
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragment, collectionFragment).commit();
+                        System.out.println("3");
                         return true;
 
                     case R.id.menu_favorites:

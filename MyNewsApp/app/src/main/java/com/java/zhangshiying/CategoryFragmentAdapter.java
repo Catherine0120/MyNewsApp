@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -330,4 +331,6 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
     }
 
     public void notifyChanged() {notifyDataSetChanged();}
+
+
 }

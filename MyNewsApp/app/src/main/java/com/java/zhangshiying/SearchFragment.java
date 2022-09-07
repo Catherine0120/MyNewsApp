@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -74,6 +75,7 @@ public class SearchFragment extends Fragment {
 
         start_date_btn = (Button) view.findViewById(R.id.start_date_btn);   start_date_btn.setOnClickListener(myBtnOnClickListener);
         end_date_btn = (Button) view.findViewById(R.id.end_date_btn);   end_date_btn.setOnClickListener(myBtnOnClickListener);
+
 
         display_start_date = (TextView) view.findViewById(R.id.display_start_date);
         display_end_date = (TextView) view.findViewById(R.id.display_end_date);

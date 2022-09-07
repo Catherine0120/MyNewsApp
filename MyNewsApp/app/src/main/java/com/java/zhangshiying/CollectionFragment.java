@@ -35,6 +35,7 @@ public class CollectionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         myCollectionFragmentAdapter = new CollectionFragmentAdapter(this, mainActivityContext);
         viewPager = view.findViewById(R.id.pager);
+        viewPager.setSaveEnabled(false);
         viewPager.setAdapter(myCollectionFragmentAdapter);
         TabLayout tabLayout = view.findViewById(R.id.tab_layout);
         new TabLayoutMediator(tabLayout, viewPager,true, new TabLayoutMediator.TabConfigurationStrategy(){
