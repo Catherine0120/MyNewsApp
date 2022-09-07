@@ -6,84 +6,92 @@
     android:layout_margin="10dp"
     android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/image_detail"
-            android:adjustViewBounds="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="150dp"
-            android:maxHeight="200dp"
-            android:src="@mipmap/biden"
-            android:layout_margin="10dp"
-            android:layout_marginTop="15dp"
-            android:visibility="gone"
-            android:layout_gravity="center_horizontal|top"/>
+    <VideoView
+        android:id="@+id/video_detail"
+        android:adjustViewBounds="true"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        android:visibility="gone"/>
 
-        <HorizontalScrollView
-            android:id="@+id/horizontal_scroll_view_detail"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:visibility="gone">
+    <ImageView
+        android:id="@+id/image_detail"
+        android:adjustViewBounds="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="150dp"
+        android:maxHeight="200dp"
+        android:src="@mipmap/biden"
+        android:layout_margin="10dp"
+        android:layout_marginTop="15dp"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal|top"/>
 
-            <LinearLayout
-                android:id="@+id/image_horizontal_layout"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
-
-        <TextView
-            android:id="@+id/title_detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            android:text="拜登签署实施芯片法行政令 中方此前明确表示坚决反对"
-            android:textSize="20sp"
-            android:fontFamily="@font/dengxianbold"
-            android:lineSpacingExtra="8dp"/>
+    <HorizontalScrollView
+        android:id="@+id/horizontal_scroll_view_detail"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:visibility="gone">
 
         <LinearLayout
-            android:id="@+id/info_detail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:id="@+id/image_horizontal_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/category_detail"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:text="科技"
-                android:textSize="18sp"
-                android:fontFamily="@font/dengxianbold"
-                android:textColor="@color/blue"/>
-
-            <TextView
-                android:id="@+id/origin_detail"
-                android:layout_weight="3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="凤凰网"
-                android:textAlignment="textEnd"
-                android:textSize="15sp"
-                android:fontFamily="@font/dengxian"/>
-
-            <TextView
-                android:id="@+id/time_detail"
-                android:layout_marginEnd="10dp"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:text="2022-08-26 11:50:33"
-                android:textAlignment="textEnd"
-                android:textSize="15sp"
-                android:fontFamily="@font/dengxian"/>
-
         </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/title_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"
+        android:text="拜登签署实施芯片法行政令 中方此前明确表示坚决反对"
+        android:textSize="20sp"
+        android:fontFamily="@font/dengxianbold"
+        android:lineSpacingExtra="8dp"/>
+
+    <LinearLayout
+        android:id="@+id/info_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/category_detail"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:text="科技"
+            android:textSize="18sp"
+            android:fontFamily="@font/dengxianbold"
+            android:textColor="@color/blue"/>
+
+        <TextView
+            android:id="@+id/origin_detail"
+            android:layout_weight="3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="凤凰网"
+            android:textAlignment="textEnd"
+            android:textSize="15sp"
+            android:fontFamily="@font/dengxian"/>
+
+        <TextView
+            android:id="@+id/time_detail"
+            android:layout_marginEnd="10dp"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="2022-08-26 11:50:33"
+            android:textAlignment="textEnd"
+            android:textSize="15sp"
+            android:fontFamily="@font/dengxian"/>
+
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"

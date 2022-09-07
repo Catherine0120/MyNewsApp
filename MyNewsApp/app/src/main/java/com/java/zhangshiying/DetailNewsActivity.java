@@ -3,6 +3,8 @@ package com.java.zhangshiying;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,8 +17,10 @@ import android.widget.CompoundButton;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +45,7 @@ public class DetailNewsActivity extends AppCompatActivity {
     News news;
     ImageView topImageView;
     HorizontalScrollView topImagesScrollView;
+    VideoView video;
     LinearLayout myLinearLayout;
 
     ShineButton likeButton, favButton;
@@ -111,6 +116,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         timeDetail.setText(news.time);
         TextView contentDetail = (TextView) findViewById(R.id.content_detail);
         contentDetail.setText(news.content);
+        video = (VideoView) findViewById(R.id.video_detail);
 
         likeButton = findViewById(R.id.shineBtn_like);
         favButton = findViewById(R.id.shineBtn_favorites);
@@ -154,7 +160,26 @@ public class DetailNewsActivity extends AppCompatActivity {
             }
         });
 
-        if (news.imageExist) {
+        if (news.videoExist) {
+            video.setVisibility(View.VISIBLE);
+            MediaController mediaController = new MediaController(DetailNewsActivity.this);
+            video.setMediaController(mediaController);
+            mediaController.setAnchorView(video);
+            video.setVideoURI(Uri.parse(news.videoUrls.get(0)));
+            video.requestFocus();
+            video.start();
+
+            video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    Log.d("video", "setOnErrorListener ");
+                    return true;
+                }
+            });
+
+        }
+
+        else if (news.imageExist) {
             if (news.imageCount == 1) {
                 topImageView = (ImageView) findViewById(R.id.image_detail);
                 topImageView.setVisibility(View.VISIBLE);

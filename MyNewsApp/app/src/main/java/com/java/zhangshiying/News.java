@@ -65,10 +65,10 @@ public class News {
         try {
             String videoUrls = news.getString("video");
             if (videoUrls.length() == 0) return urls;
-            videoUrls = videoUrls.substring(1, videoUrls.length() - 1);
-            if (videoUrls.length() == 0) return urls;
             else {
                 videoUrls = videoUrls.replaceAll("\\] \\[", ", ");
+                videoUrls = videoUrls.replaceAll("\\]", "");
+                videoUrls = videoUrls.replaceAll("\\[", "");
                 List<String> urlList = Arrays.asList(videoUrls.split(", "));
                 for (String str : urlList) { if (str.length() != 0) urls.add(str);}
                 urls = deduplicate(urls);
@@ -76,7 +76,10 @@ public class News {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (urls.size() != 0) videoExist = true;
+        if (urls.size() != 0) {
+            videoExist = true;
+            System.out.println("[Video Exists]: " + urls);
+        }
         return urls;
     }
 

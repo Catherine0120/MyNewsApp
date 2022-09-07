@@ -21,6 +21,10 @@
 
 `[Log 2022/9/5 17:24]`：完成`SearchBar` 重绘
 
+`[Log 2022/9/6]`：实现`ViewPager2`+`Fragment`
+
+`[Log 2022/9/7 11:17]`：完成视频播放功能
+
 
 
 -----------
@@ -29,7 +33,7 @@
 
 1. ~~`BottomNavigation + ViewPager2 + Fragment`（包括`scroll`的时候`Navigation`收缩等）~~
 2. ~~图片加载问题：`java.net.MalFormedURLException: no protocol`，`D/skia:---Failed to create image decoder with message 'unimplemented'`， `gif`动图之间的`[`&`]`格式问题~~
-3. 视频播放
+3. ~~视频播放~~
 4. ~~`detailed page`中图片过大问题~~
 5. ~~整体配色考虑？（蓝绿灰色系 or 加粉紫灰色系）——已解决：蓝绿灰色系+加载用粉紫色~~
 6. ~~`DetailNewsActivity`的点赞收藏信息返回至`DiscoverFragment`，但应该要返回`DiscoverAdapter`处理，否则如果进行过`SCROLL_AND_LOAD`操作会导致`pos`越界——已解决：同步`DiscoverFragment`和`DiscoverAdapter`的`NewsList`~~

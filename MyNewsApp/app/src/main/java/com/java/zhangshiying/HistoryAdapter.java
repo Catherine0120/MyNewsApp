@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -97,6 +100,24 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
                 }
 
             }
+        }
+        if (news.videoExist) {
+            System.out.println("[DiscoverAdapter]: video exists " + news.videoUrls);
+            holder.video.setVisibility(View.VISIBLE);
+            MediaController mediaController = new MediaController(myFragment.getContext());
+            holder.video.setMediaController(mediaController);
+            mediaController.setAnchorView(holder.video);
+            holder.video.setVideoURI(Uri.parse(news.videoUrls.get(0)));
+            holder.video.requestFocus();
+            holder.video.start();
+
+            holder.video.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    Log.d("video", "setOnErrorListener ");
+                    return true;
+                }
+            });
         }
 
         view.findViewById(R.id.materialCardView).setOnClickListener(new View.OnClickListener() {
