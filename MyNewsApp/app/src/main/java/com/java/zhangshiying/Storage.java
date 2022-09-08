@@ -37,7 +37,7 @@ public class Storage {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(key, value);
         editor.commit();
-        System.out.println("[Storage]: commit " + key + ", " + value);
+//        System.out.println("[Storage]: commit " + key + ", " + value);
     }
 
     public static String newsToString(News news) {

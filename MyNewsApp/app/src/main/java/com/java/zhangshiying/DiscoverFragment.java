@@ -98,7 +98,7 @@ public class DiscoverFragment extends Fragment {
                 }
 
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
     }
@@ -147,7 +147,7 @@ public class DiscoverFragment extends Fragment {
 
         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
         result.setLayoutManager(myLayoutManager);
-        System.out.println("[DiscoverFragment.onCreateView => DiscoverAdapter]: newsList=" + newsList);
+//        System.out.println("[DiscoverFragment.onCreateView => DiscoverAdapter]: newsList=" + newsList);
         myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager, launcher);
         myDiscoverAdapter.setHasStableIds(true);
         result.setAdapter(myDiscoverAdapter);
@@ -181,7 +181,7 @@ public class DiscoverFragment extends Fragment {
             int pos = Integer.parseInt(message[1]);
             News news = Storage.findNewsValue(context.getApplicationContext(), newsID);
             newsList.get(pos).images = (ArrayList<String>) news.images.clone();
-            System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news.title]=" + newsList.get(pos).title);
+//            System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news.title]=" + newsList.get(pos).title);
             newsList.get(pos).readDetail = true;
             if (message.length == 4) {
                 newsList.get(pos).like = true;
@@ -237,7 +237,7 @@ public class DiscoverFragment extends Fragment {
                 tmpUrl = replace(str, "page", Integer.toString(++currentPage));
                 urlsFromSearch.set(i, tmpUrl);
             }
-            System.out.println("[SearchFragment]" + tmpUrl);
+//            System.out.println("[SearchFragment]" + tmpUrl);
             try {
                 URL url  = new URL(tmpUrl);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -260,7 +260,7 @@ public class DiscoverFragment extends Fragment {
                 myHandler.sendMessage(msg);
 
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
     }
@@ -278,7 +278,7 @@ public class DiscoverFragment extends Fragment {
             inStream.close();
             s = outStream.toString();
         } catch(Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return s;
     }
@@ -288,7 +288,7 @@ public class DiscoverFragment extends Fragment {
             Uri uri = Uri.parse(url);
             return uri.getQueryParameter(tag);
         } catch (Exception e){
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return null;
     }

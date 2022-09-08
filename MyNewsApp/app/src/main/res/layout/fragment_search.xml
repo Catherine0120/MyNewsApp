@@ -337,15 +337,4 @@
         app:strokeColor="@drawable/select_btn_stroke_color"
         app:strokeWidth="1dp" />
 
-    <ImageView
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:src="@mipmap/img"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/start_date_btn" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

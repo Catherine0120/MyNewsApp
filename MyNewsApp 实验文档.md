@@ -1,3 +1,7 @@
+---
+typora-copy-images-to: upload
+---
+
 # MyNewsApp 实验文档
 
 Author：张诗颖（经12-计18，2021011056，shiying-21@mails.tsinghua.edu.cn）
@@ -288,16 +292,17 @@ class ResultContract extends ActivityResultContract<String, String> {
 
 *以下若未经特别说明 “离线 ”以设置手机为飞行模式为例*
 
-+ 【离线时在Discover主界面】
-  Discover：已经加载出来的新闻列表仍可查看，当前版面的图片仍可查看，滑动列表后图片不可查看。再次点击导航栏的`Discover`按钮，界面提示“Network Failure”，无法搜索到结果。
-  Favorites：列表即点击进入的详细页面均完整（包括图片，不包括视频），可以进行点赞、收藏、取消收藏操作。
-  Histroy：列表即点击进入的详细页面均完整（包括图片，不包括视频），可以进行点赞、收藏、取消收藏操作。
-  Search：搜索页面正常显示，搜索结果页面提示“Network Failure”，无法搜索到结果
-+ 【离线时在非Discover主界面】
-  由于Discover按钮自带刷新功能，因此在此点击Discover时界面显示“Network Failure”，无法搜索到结果，也无法重新回看之前的新闻列表。
-  其余界面与前种情况相同。
+正在阅读的Discover新闻列表会实时缓存新闻信息（但仅缓存除图片视频意外的其他信息）
 
++ Discover：左右滑动不同分类的新闻列表，已加载出来的新闻列表仍可查看（包括图片）；未加载任何新闻列表的页面显示“Network Failure”，无法搜索到结果；仅点击阅读过的新闻（边框为灰色）可以正常点击进入离线浏览，未阅读过的新闻点击进入详情页后无法浏览图片信息（但文字部分内容正常）；刷新后界面提示“Network Failure”，无法搜索到结果。
 
++ Favorites：列表即点击进入的详细页面均完整（包括图片，不包括视频），可以进行点赞、收藏、取消收藏操作。
+
++ Histroy：列表即点击进入的详细页面均完整（包括图片，不包括视频），可以进行点赞、收藏、取消收藏操作。
+
++ Search：搜索页面正常显示，搜索结果页面提示“Network Failure”，无法搜索到结果
+
+![offline](https://cdn.jsdelivr.net/gh/Catherine0120/typora_image/offline.jpg)
 
 
 

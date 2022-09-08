@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                             tmpNewsDescriptionList.add(new News(singleNewsDescription));
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                     }
                     if (total == tmpCount) {
                         if (tmpNewsDescriptionList.size() == 0) Toast.makeText(MainActivity.this, "Sorry, no result matches your search...", Toast.LENGTH_LONG).show();
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                     conn.setConnectTimeout(5000);
                     InputStream inputStream = conn.getInputStream();
                     s = MainActivity.readFromStream(inputStream);
-                    System.out.println("[MainActivity.getSearchFragment]: [" + myUrl + "] " + s);
+//                    System.out.println("[MainActivity.getSearchFragment]: [" + myUrl + "] " + s);
                     Bundle bundle = new Bundle();
                     bundle.putInt("total", total);
                     bundle.putString("url", myUrl);
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment, discoverFragment).commit();
                     Toast.makeText(MainActivity.this, "Network Failure", Toast.LENGTH_SHORT).show();
                     Looper.loop();
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
         }).start();
@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity  implements SlideDatePickerD
             inStream.close();
             s = outStream.toString();
         } catch(Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return s;
     }

@@ -76,14 +76,14 @@ public class CategoryFragment extends Fragment {
                             JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
                             Storage.tmpNewsList.get(category_label).add(new News(singleNewsDescription));
                         }
-                        System.out.println("[CategoryFragment.FirstCreate]: " + Storage.tmpNewsList.get(category_label));
+//                        System.out.println("[CategoryFragment.FirstCreate]: " + Storage.tmpNewsList.get(category_label));
                         LinearLayoutManager myLayoutManager = new LinearLayoutManager(CategoryFragment.this.getContext());
                         result.setLayoutManager(myLayoutManager);
                         myCategoryAdapter = new CategoryFragmentAdapter(mainActivityContext, CategoryFragment.this, myLayoutManager, launcher, category_label);
                         result.setAdapter(myCategoryAdapter);
                         loadPulse.setVisibility(View.INVISIBLE);
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                     }
                     break;
                 case(2):
@@ -111,7 +111,7 @@ public class CategoryFragment extends Fragment {
                         }
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+//                        e.printStackTrace();
                     }
                     break;
                 default:
@@ -205,7 +205,7 @@ public class CategoryFragment extends Fragment {
             int pos = Integer.parseInt(message[1]);
             News news = Storage.findNewsValue(GlobalApplication.getAppContext(), newsID);
             Storage.tmpNewsList.get(category_label).get(pos).images = (ArrayList<String>) news.images.clone();
-            System.out.println("[CategoryFragment] news result received: [pos]=" + pos + ", [news.title]=" + Storage.tmpNewsList.get(category_label).get(pos).title);
+//            System.out.println("[CategoryFragment] news result received: [pos]=" + pos + ", [news.title]=" + Storage.tmpNewsList.get(category_label).get(pos).title);
             Storage.tmpNewsList.get(category_label).get(pos).readDetail = true;
             if (message.length == 4) {
                 Storage.tmpNewsList.get(category_label).get(pos).like = true;
@@ -319,7 +319,7 @@ public class CategoryFragment extends Fragment {
                 Storage.write(GlobalApplication.getAppContext(), "currentPage", Storage.updateCurrentPage(MainActivity.currentPage));
 
                 myUrl = String.format(myUrl, MainActivity.pageSize, today, category_chinese, MainActivity.currentPage[category_label]);
-                System.out.println(myUrl);
+//                System.out.println(myUrl);
                 String s = "";
                 try {
                     URL url  = new URL(myUrl);
@@ -328,7 +328,7 @@ public class CategoryFragment extends Fragment {
                     conn.setConnectTimeout(5000);
                     InputStream inputStream = conn.getInputStream();
                     s = readFromStream(inputStream);
-                    System.out.println("[Category.crawl]: s = " + s);
+//                    System.out.println("[Category.crawl]: s = " + s);
                     Message msg = new Message();
                     msg.obj = s;
                     msg.what = 1;
@@ -337,7 +337,7 @@ public class CategoryFragment extends Fragment {
                     Looper.prepare();
                     Toast.makeText(getContext(), "Network Failure", Toast.LENGTH_LONG).show();
                     Looper.loop();
-                    e.printStackTrace();
+//                    e.printStackTrace();
                 }
             }
         }).start();
@@ -349,7 +349,7 @@ public class CategoryFragment extends Fragment {
 
         Storage.write(GlobalApplication.getAppContext(), "currentPage", Storage.updateCurrentPage(MainActivity.currentPage));
 
-        System.out.println("[CategoryFragment]: URL=" + myUrl);
+//        System.out.println("[CategoryFragment]: URL=" + myUrl);
         String s = "";
         try {
             URL url  = new URL(myUrl);
@@ -376,7 +376,7 @@ public class CategoryFragment extends Fragment {
             Looper.prepare();
             Toast.makeText(getContext(), "Network Failure", Toast.LENGTH_LONG).show();
             Looper.loop();
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
     }
@@ -394,7 +394,7 @@ public class CategoryFragment extends Fragment {
             inStream.close();
             s = outStream.toString();
         } catch(Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
         return s;
     }

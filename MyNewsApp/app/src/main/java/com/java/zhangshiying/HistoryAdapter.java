@@ -86,8 +86,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
                     ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap(news.images.get(1)));
                     holder.images.setVisibility(View.VISIBLE);
                 } catch (Exception e) {
-                    System.out.println("[HistoryAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
-                        e.printStackTrace();
+//                    System.out.println("[HistoryAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
+//                        e.printStackTrace();
                 }
 
             } else if (Storage.findNewsValue(context.getApplicationContext(), news.newsID).images.size() == 1) {
@@ -95,14 +95,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
                     holder.image.setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
                     holder.image.setVisibility(View.VISIBLE);
                 } catch (Exception e) {
-                    System.out.println("[HistoryAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
-                        e.printStackTrace();
+//                    System.out.println("[HistoryAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
+//                        e.printStackTrace();
                 }
 
             }
         }
         if (news.videoExist) {
-            System.out.println("[DiscoverAdapter]: video exists " + news.videoUrls);
+//            System.out.println("[DiscoverAdapter]: video exists " + news.videoUrls);
             holder.video.setVisibility(View.VISIBLE);
             MediaController mediaController = new MediaController(myFragment.getContext());
             holder.video.setMediaController(mediaController);
@@ -123,7 +123,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         view.findViewById(R.id.materialCardView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("[HistoryAdapter.onClick]: [pos]=" + pos + ", [news]=" + news.title);
+//                System.out.println("[HistoryAdapter.onClick]: [pos]=" + pos + ", [news]=" + news.title);
                 launcher.launch(news.newsID + "," + -1);
             }
         });

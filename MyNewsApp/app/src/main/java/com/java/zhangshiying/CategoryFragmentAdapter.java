@@ -69,7 +69,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                         Storage.tmpNewsList.get(category_label).get(pos).images.add(Storage.bitmapToString((Bitmap) msg.obj));
                     } catch (Exception e) {
 //                        e.printStackTrace();
-                        System.out.println("[CategoryAdapter.handleTitleImage] pos=" + pos + ": R.id.image not found");
+//                        System.out.println("[CategoryAdapter.handleTitleImage] pos=" + pos + ": R.id.image not found");
                         Log.e("loadImage", "error");
                     }
                     break;
@@ -80,7 +80,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                         images = (LinearLayout) myLayoutManager.findViewByPosition(pos_case_2).findViewById(R.id.images);
                     } catch (Exception e) {
 //                        e.printStackTrace();
-                        System.out.println("[CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": R.id.images not found");
+//                        System.out.println("[CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": R.id.images not found");
                         break;
                     }
                     if (myMap.containsKey(pos_case_2)
@@ -96,7 +96,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                             myMap.remove(pos_case_2);
                         } catch (Exception e) {
 //                            e.printStackTrace();
-                            System.out.println("E [CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_2 error");
+//                            System.out.println("E [CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_2 error");
                             Log.e("loadImage2", "error");
                         }
                     }
@@ -107,7 +107,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                             Storage.tmpNewsList.get(category_label).get(pos_case_2).images.add(Storage.bitmapToString((Bitmap) msg.obj));
                         } catch (Exception e) {
 //                            e.printStackTrace();
-                            System.out.println("E [CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_1 error");
+//                            System.out.println("E [CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_1 error");
                             Log.e("loadImage1", "error");
                         }
                     }
@@ -126,7 +126,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
         this.myLayoutManager = myLayoutManager;
         this.launcher = launcher;
         this.category_label = category_label;
-        System.out.println("[CategoryAdapter.Constructor]: newsList = " + Storage.tmpNewsList.get(category_label));
+//        System.out.println("[CategoryAdapter.Constructor]: newsList = " + Storage.tmpNewsList.get(category_label));
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -183,21 +183,21 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
 
         if (news.imageExist) {
             if (news.imageCount >= 2) {
-                System.out.println("[CategoryFragmentAdapter.news.imageExist]2: " + news.title + ", news.read = " + news.read);
+//                System.out.println("[CategoryFragmentAdapter.news.imageExist]2: " + news.title + ", news.read = " + news.read);
                 if (news.read && Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID).images.size() >= 2) {
                     try {
                         ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(0)));
                         ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(1)));
                         holder.images.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
-                        System.out.println("E [CategoryAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
-                        e.printStackTrace();
+//                        System.out.println("E [CategoryAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
+//                        e.printStackTrace();
                     }
                 }
                 else if (!news.read) {
                     if (news.images.size() >= 2) {
                         try {
-                            System.out.println("[CategoryFragmentAdapter.news.imageExist]2: try load images from local, unread news");
+//                            System.out.println("[CategoryFragmentAdapter.news.imageExist]2: try load images from local, unread news");
                             ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
                             ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap(news.images.get(1)));
                             holder.images.setVisibility(View.VISIBLE);
@@ -210,7 +210,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
             }
 
             else {
-                System.out.println("[CategoryFragmentAdapter.news.imageExist]1: " + news.title + ", news.read = " + news.read + ", news.images.size = " + news.images.size());
+//                System.out.println("[CategoryFragmentAdapter.news.imageExist]1: " + news.title + ", news.read = " + news.read + ", news.images.size = " + news.images.size());
                 if (news.read && Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID).images.size() == 1) {
                     try {
                         holder.image.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(0)));
@@ -236,13 +236,13 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
         }
 
         if (news.videoExist) {
-            System.out.println("[DiscoverAdapter]: video exists " + news.videoUrls);
+//            System.out.println("[DiscoverAdapter]: video exists " + news.videoUrls);
             holder.video.setVisibility(View.VISIBLE);
             MediaController mediaController = new MediaController(fragmentContext.getContext());
             holder.video.setMediaController(mediaController);
             mediaController.setAnchorView(holder.video);
             holder.video.setVideoURI(Uri.parse(news.videoUrls.get(0)));
-            System.out.println("[parse]: " + news.videoUrls.get(0));
+//            System.out.println("[parse]: " + news.videoUrls.get(0));
             holder.video.requestFocus();
             holder.video.start();
 
@@ -268,7 +268,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                     news.readDetail = true;
                     Storage.write(GlobalApplication.getAppContext(), news.newsID, Storage.newsToString(news));
                 }
-                System.out.println("[CategoryAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
+//                System.out.println("[CategoryAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
                 launcher.launch(news.newsID + "," + pos);
             }
         });
@@ -299,8 +299,8 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                         myHandler.sendMessage(msg);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("[CategoryAdapter]: [" + pos + "] ERROR src = " + src);
+//                        e.printStackTrace();
+//                        System.out.println("[CategoryAdapter]: [" + pos + "] ERROR src = " + src);
                         Log.e("Exception",e.getMessage());
                     }
                 }
@@ -332,8 +332,8 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                         myHandler.sendMessage(msg);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("[CategoryAdapter]: [" + pos + "]: ERROR src1 = " + src);
+//                        e.printStackTrace();
+//                        System.out.println("[CategoryAdapter]: [" + pos + "]: ERROR src1 = " + src);
                         Log.e("Exception (image_1)",e.getMessage());
                     }
                 }
@@ -363,8 +363,8 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                         myHandler.sendMessage(msg);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("[CategoryAdapter]: [" + pos + "]: ERROR src2 = " + src2);
+//                        e.printStackTrace();
+//                        System.out.println("[CategoryAdapter]: [" + pos + "]: ERROR src2 = " + src2);
                         Log.e("Exception (image_2)",e.getMessage());
                     }
                 }

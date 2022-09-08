@@ -76,7 +76,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         iv.setImageBitmap((Bitmap)msg.obj);
                     } catch (Exception e) {
 //                        e.printStackTrace();
-                        System.out.println("[DiscoverAdapter.handleTitleImage] pos=" + pos + ": R.id.image not found");
+//                        System.out.println("[DiscoverAdapter.handleTitleImage] pos=" + pos + ": R.id.image not found");
                         Log.e("loadImage", "error");
                     }
                     break;
@@ -87,7 +87,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         images = (LinearLayout) myLayoutManager.findViewByPosition(pos_case_2).findViewById(R.id.images);
                     } catch (Exception e) {
 //                        e.printStackTrace();
-                        System.out.println("[DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": R.id.images not found");
+//                        System.out.println("[DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": R.id.images not found");
                         break;
                     }
                     if (myMap.containsKey(pos_case_2)
@@ -102,7 +102,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                             myMap.remove(pos_case_2);
                         } catch (Exception e) {
 //                            e.printStackTrace();
-                            System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_2 error");
+//                            System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_2 error");
                             Log.e("loadImage2", "error");
                         }
                     }
@@ -112,7 +112,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                             mapHelper.put(pos_case_2, msg.getData().getInt("label"));
                         } catch (Exception e) {
 //                            e.printStackTrace();
-                            System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_1 error");
+//                            System.out.println("E [DiscoverAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_1 error");
                             Log.e("loadImage1", "error");
                         }
                     }
@@ -133,7 +133,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         this.fragmentContext = fragment;
         this.myLayoutManager = myLayoutManager;
         this.launcher = launcher;
-        System.out.println("[DiscoverAdapter.Constructor]: newsList = " + newsList);
+//        System.out.println("[DiscoverAdapter.Constructor]: newsList = " + newsList);
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -206,8 +206,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         holder.images.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         cannotLoadFromLocal = true;
-                        System.out.println("E [DiscoverAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
-                        e.printStackTrace();
+//                        System.out.println("E [DiscoverAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
+//                        e.printStackTrace();
                     }
                 }
                 if (cannotLoadFromLocal || !news.read) {
@@ -222,15 +222,15 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         holder.image.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
                         cannotLoadFromLocal = true;
-                        System.out.println("E [DiscoverAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
-                        e.printStackTrace();
+//                        System.out.println("E [DiscoverAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
+//                        e.printStackTrace();
                     }
                 }
                 if (cannotLoadFromLocal || !news.read)  getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, false);
             }
         }
         if (news.videoExist) {
-            System.out.println("[DiscoverAdapter]: video exists " + news.videoUrls);
+//            System.out.println("[DiscoverAdapter]: video exists " + news.videoUrls);
             holder.video.setVisibility(View.VISIBLE);
             MediaController mediaController = new MediaController(fragmentContext.getContext());
             holder.video.setMediaController(mediaController);
@@ -258,7 +258,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                 }
                 else news.readDetail = true;
                 Storage.write(mainActivityContext.getApplicationContext(), news.newsID, Storage.newsToString(news));
-                System.out.println("[DiscoverAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
+//                System.out.println("[DiscoverAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
                 launcher.launch(news.newsID + "," + pos);
             }
         });
@@ -290,8 +290,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         myHandler.sendMessage(msg);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("[DiscoverAdapter]: [" + pos + "] ERROR src = " + src);
+//                        e.printStackTrace();
+//                        System.out.println("[DiscoverAdapter]: [" + pos + "] ERROR src = " + src);
                         Log.e("Exception",e.getMessage());
                     }
                 }
@@ -323,8 +323,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         myHandler.sendMessage(msg);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("[DiscoverAdapter]: [" + pos + "]: ERROR src1 = " + src);
+//                        e.printStackTrace();
+//                        System.out.println("[DiscoverAdapter]: [" + pos + "]: ERROR src1 = " + src);
                         Log.e("Exception (image_1)",e.getMessage());
                     }
                 }
@@ -354,8 +354,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
                         myHandler.sendMessage(msg);
 
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("[DiscoverAdapter]: [" + pos + "]: ERROR src2 = " + src2);
+//                        e.printStackTrace();
+//                        System.out.println("[DiscoverAdapter]: [" + pos + "]: ERROR src2 = " + src2);
                         Log.e("Exception (image_2)",e.getMessage());
                     }
                 }

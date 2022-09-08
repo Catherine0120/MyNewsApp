@@ -70,8 +70,8 @@ public class DetailNewsActivity extends AppCompatActivity {
                             news.images.add(Storage.bitmapToString((Bitmap)((Object[]) msg.obj)[0]));
                             Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
                         } catch (Exception e) {
-                            System.out.println("E [DetailNewsActivity.singleImage]: load or save error");
-                            e.printStackTrace();
+//                            System.out.println("E [DetailNewsActivity.singleImage]: load or save error");
+//                            e.printStackTrace();
                         }
                         break;
                     }
@@ -84,8 +84,8 @@ public class DetailNewsActivity extends AppCompatActivity {
                             news.images.add(Storage.bitmapToString((Bitmap)((Object[]) msg.obj)[0]));
                             Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
                         } catch (Exception e) {
-                            System.out.println("E [DetailNewsActivity.multiImages]: load or save error");
-                            e.printStackTrace();
+//                            System.out.println("E [DetailNewsActivity.multiImages]: load or save error");
+//                            e.printStackTrace();
                         }
                         break;
                     }
@@ -103,7 +103,7 @@ public class DetailNewsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail_news);
 
         news = Storage.findNewsValue(getApplicationContext(), this.getIntent().getStringExtra("newsID").split(",")[0]);
-        System.out.println("[DEBUG] [DetailNewsActivity]: storage.news.images.size() = " + news.images.size());
+//        System.out.println("[DEBUG] [DetailNewsActivity]: storage.news.images.size() = " + news.images.size());
 
         pos = this.getIntent().getStringExtra("newsID").split(",")[1];
 
@@ -132,7 +132,7 @@ public class DetailNewsActivity extends AppCompatActivity {
             public void onCheckedChanged(View view, boolean checked) {
                 news.like = checked;
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
-                System.out.println("[DetailNewsActivity.getResultMsg()]: " + getResultMsg());
+//                System.out.println("[DetailNewsActivity.getResultMsg()]: " + getResultMsg());
                 Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
             }
         });
@@ -141,22 +141,22 @@ public class DetailNewsActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(View view, boolean checked) {
                 if (!news.fav && checked) {
-                    System.out.println("[Debug.DetailNewsActivity]: add to fav List");
+//                    System.out.println("[Debug.DetailNewsActivity]: add to fav List");
                     Storage.addFav(getApplicationContext(), news.newsID);
                     ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
-                    System.out.println("[Debug.DetailNewsActivity.Storage] after: FavoritesNewsList");
-                    for (String str : myList1) System.out.println("      " + str);
+//                    System.out.println("[Debug.DetailNewsActivity.Storage] after: FavoritesNewsList");
+//                    for (String str : myList1) System.out.println("      " + str);
                 }
                 else if (news.fav && !checked) {
-                    System.out.println("[Debug.DetailNewsActivity]: remove from fav List");
+//                    System.out.println("[Debug.DetailNewsActivity]: remove from fav List");
                     Storage.removeNewsFromFav(getApplicationContext(), news.newsID);
                     ArrayList<String> myList1 = Storage.findListValue(getApplicationContext(),"fav");
-                    System.out.println("[Debug.DetailNewsActivity.Storage] after: FavoritesNewsList");
-                    for (String str : myList1) System.out.println("      " + str);
+//                    System.out.println("[Debug.DetailNewsActivity.Storage] after: FavoritesNewsList");
+//                    for (String str : myList1) System.out.println("      " + str);
                 }
                 news.fav = checked;
                 setResult(RESULT_OK, new Intent().putExtra("feedback", getResultMsg()));
-                System.out.println("[DetailNewsActivity.getResultMsg()]: " + getResultMsg());
+//                System.out.println("[DetailNewsActivity.getResultMsg()]: " + getResultMsg());
                 Storage.write(getApplicationContext(), news.newsID, Storage.newsToString(news));
             }
         });
@@ -186,16 +186,16 @@ public class DetailNewsActivity extends AppCompatActivity {
                 topImageView.setVisibility(View.VISIBLE);
                 if (!news.readDetail) {
                     news.readDetail = true;
-                    System.out.println("[DEBUG] [DetailNewsActivity]: load image from URL");
+//                    System.out.println("[DEBUG] [DetailNewsActivity]: load image from URL");
                     getBitmapFromURL(news.imageUrls.get(0), false, null, null);
                 }
                 else {
                     try {
-                        System.out.println("[DEBUG] [DetailNewsActivity]: load image from local");
+//                        System.out.println("[DEBUG] [DetailNewsActivity]: load image from local");
                         topImageView.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(getApplicationContext(), news.newsID)).images.get(0)));
                     } catch (Exception e) {
-                        System.out.println("E [DetailNewsActivity.loadTitleImageFromLocal] : R.id.image not found");
-                        e.printStackTrace();
+//                        System.out.println("E [DetailNewsActivity.loadTitleImageFromLocal] : R.id.image not found");
+//                        e.printStackTrace();
                     }
                 }
             }
@@ -208,17 +208,17 @@ public class DetailNewsActivity extends AppCompatActivity {
                     ImageView img = view.findViewById(R.id.single_image);
                     if (!news.readDetail) {
                         if (i == news.imageCount - 1) news.readDetail = true;
-                        System.out.println("[DEBUG] [DetailNewsActivity]: load images from URL");
+//                        System.out.println("[DEBUG] [DetailNewsActivity]: load images from URL");
                         getBitmapFromURL(news.imageUrls.get(i), true, view, img);
                     }
                     else {
                         try {
-                            System.out.println("[DEBUG] [DetailNewsActivity]: load images from local");
+//                            System.out.println("[DEBUG] [DetailNewsActivity]: load images from local");
                             img.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(getApplicationContext(), news.newsID)).images.get(i)));
                             myLinearLayout.addView(view);
                         } catch (Exception e) {
-                            System.out.println("[DEBUG]: can't load images from local");
-                            e.printStackTrace();
+//                            System.out.println("[DEBUG]: can't load images from local");
+//                            e.printStackTrace();
                         }
 
                     }
@@ -250,8 +250,8 @@ public class DetailNewsActivity extends AppCompatActivity {
                     myHandler.sendMessage(msg);
 
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    System.out.println("[Detailed Page] ERROR src = " + src);
+//                    e.printStackTrace();
+//                    System.out.println("[Detailed Page] ERROR src = " + src);
                     Log.e("Exception",e.getMessage());
                 }
             }
