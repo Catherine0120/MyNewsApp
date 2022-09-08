@@ -175,15 +175,14 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
         final int pos = position;
         holder.setIsRecyclable(false);
         News news = newsList.get(position);
+        holder.card.setStrokeColor(ContextCompat.getColor(mainActivityContext, R.color.light_teal));
+        holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.light_teal)));
+        holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.teal_700)));
         if (news.read) {
             holder.card.setStrokeColor(ContextCompat.getColor(mainActivityContext, R.color.light_grey));
             holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.light_grey)));
             holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.dark_grey)));
         }
-        holder.card.setStrokeColor(ContextCompat.getColor(mainActivityContext, R.color.light_teal));
-        holder.card.setRippleColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.light_teal)));
-        holder.category.setTextColor(ColorStateList.valueOf(ContextCompat.getColor(mainActivityContext, R.color.teal_700)));
-
         holder.title.setText(news.title);
         holder.category.setText(news.category);
         holder.origin.setText(news.origin);

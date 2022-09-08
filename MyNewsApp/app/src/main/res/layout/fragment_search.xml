@@ -338,7 +338,7 @@
         app:strokeWidth="1dp" />
 
     <ImageView
-        android:layout_width="300dp"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:adjustViewBounds="true"

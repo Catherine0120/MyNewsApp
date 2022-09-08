@@ -129,7 +129,6 @@ public class CategoryFragment extends Fragment {
     public CategoryFragment(Context mainActivityContext) {
         this.mainActivityContext = mainActivityContext;
         initNewsList();
-        System.out.println("[DEBUG]");
     }
 
     private void initNewsList() {
@@ -326,11 +325,9 @@ public class CategoryFragment extends Fragment {
                     msg.obj = s;
                     msg.what = 1;
                     myHandler.sendMessage(msg);
-
                 } catch (Exception e) {
                     Looper.prepare();
-                    loadPulse.setVisibility(View.INVISIBLE);
-//                    Toast.makeText(mainActivityContext, "Network Failure", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Network Failure", Toast.LENGTH_LONG).show();
                     Looper.loop();
                     e.printStackTrace();
                 }
@@ -368,6 +365,9 @@ public class CategoryFragment extends Fragment {
             msg.setData(bundle);
             myHandler.sendMessage(msg);
         } catch (Exception e) {
+            Looper.prepare();
+            Toast.makeText(getContext(), "Network Failure", Toast.LENGTH_LONG).show();
+            Looper.loop();
             e.printStackTrace();
         }
 

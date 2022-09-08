@@ -206,6 +206,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                     View view = LayoutInflater.from(this).inflate(R.layout.single_image_layout, myLinearLayout, false);
                     ImageView img = view.findViewById(R.id.single_image);
                     if (!news.readDetail) {
+                        if (i == news.imageCount - 1) news.readDetail = true;
                         System.out.println("[DEBUG] [DetailNewsActivity]: load images from URL");
                         getBitmapFromURL(news.imageUrls.get(i), true, view, img);
                     }
@@ -215,6 +216,7 @@ public class DetailNewsActivity extends AppCompatActivity {
                             img.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(getApplicationContext(), news.newsID)).images.get(i)));
                             myLinearLayout.addView(view);
                         } catch (Exception e) {
+                            System.out.println("[DEBUG]: can't load images from local");
                             e.printStackTrace();
                         }
 
