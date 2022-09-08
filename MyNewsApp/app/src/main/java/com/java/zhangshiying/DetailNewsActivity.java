@@ -104,6 +104,7 @@ public class DetailNewsActivity extends AppCompatActivity {
 
         news = Storage.findNewsValue(getApplicationContext(), this.getIntent().getStringExtra("newsID").split(",")[0]);
         System.out.println("[DEBUG] [DetailNewsActivity]: storage.news.images.size() = " + news.images.size());
+
         pos = this.getIntent().getStringExtra("newsID").split(",")[1];
 
         TextView titleDetail = (TextView) findViewById(R.id.title_detail);
@@ -264,5 +265,6 @@ public class DetailNewsActivity extends AppCompatActivity {
         else if (news.fav) feedback = feedback + ",fav";
         return feedback;
     }
+
 
 }

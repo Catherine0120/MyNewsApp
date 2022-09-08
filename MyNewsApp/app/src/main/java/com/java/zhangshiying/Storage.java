@@ -21,6 +21,8 @@ import java.util.Objects;
 public class Storage {
     private static final String SP_NAME = "storage";
 
+    public static ArrayList<ArrayList<News>> tmpNewsList = new ArrayList<ArrayList<News>>(Arrays.asList(new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>(),new ArrayList<>()));
+
     /*
     ==[key, value]==
     ["currentDiscoverPage", String currentPage] => ["currentPage", String[] currentPages]
@@ -87,7 +89,8 @@ public class Storage {
     public static int findPageValue(Context context, int category) {
         String msg = findValue(context, "currentPage");
         String[] pageList = msg.split(",");
-        return Integer.parseInt(pageList[category]);
+        if (!Objects.equals(pageList[category], "")) return Integer.parseInt(pageList[category]);
+        return 1;
     }
 
     public static String updateCurrentPage(int[] curPage) {
@@ -110,8 +113,6 @@ public class Storage {
         SharedPreferences prefs = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         return prefs.contains(key);
     }
-
-
 
 
 

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.renderscript.ScriptIntrinsicYuvToRGB;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,7 +46,6 @@ public class CategoryFragment extends Fragment {
     Context mainActivityContext;
     String today = "";
 
-    public ArrayList<News> newsList;
     private SwipeRefreshLayout mySwipeRefreshView;
     private RecyclerView result;
     private View loadPulse;
@@ -72,16 +72,14 @@ public class CategoryFragment extends Fragment {
                     try {
                         JSONObject obj = new JSONObject(message);
                         JSONArray newsDescriptions = obj.getJSONArray("data");
-                        newsList = new ArrayList<>();
                         for (int i = 0; i < newsDescriptions.length(); ++i) {
                             JSONObject singleNewsDescription = newsDescriptions.getJSONObject(i);
-                            newsList.add(new News(singleNewsDescription));
+                            Storage.tmpNewsList.get(category_label).add(new News(singleNewsDescription));
                         }
-                        System.out.println("[CategoryFragment.FirstCreate]: " + newsList);
+                        System.out.println("[CategoryFragment.FirstCreate]: " + Storage.tmpNewsList.get(category_label));
                         LinearLayoutManager myLayoutManager = new LinearLayoutManager(CategoryFragment.this.getContext());
                         result.setLayoutManager(myLayoutManager);
-                        myCategoryAdapter = new CategoryFragmentAdapter(newsList, mainActivityContext, CategoryFragment.this, myLayoutManager, launcher);
-//                        myCategoryAdapter.setHasStableIds(true);
+                        myCategoryAdapter = new CategoryFragmentAdapter(mainActivityContext, CategoryFragment.this, myLayoutManager, launcher, category_label);
                         result.setAdapter(myCategoryAdapter);
                         loadPulse.setVisibility(View.INVISIBLE);
                     } catch (Exception e) {
@@ -100,13 +98,13 @@ public class CategoryFragment extends Fragment {
                         if (msg.getData().getInt("state") == 0) { //DROP_AND_REFRESH
                             LinearLayoutManager myLayoutManager = new LinearLayoutManager(CategoryFragment.this.getContext());
                             result.setLayoutManager(myLayoutManager);
-                            newsList = newsDescriptionList;
-                            myCategoryAdapter = new CategoryFragmentAdapter(newsDescriptionList, mainActivityContext, CategoryFragment.this, myLayoutManager, launcher);
-//                            myCategoryAdapter.setHasStableIds(true);
+                            Storage.tmpNewsList.get(category_label).clear();
+                            Storage.tmpNewsList.get(category_label).addAll(newsDescriptionList);
+                            myCategoryAdapter = new CategoryFragmentAdapter(mainActivityContext, CategoryFragment.this, myLayoutManager, launcher, category_label);
                             result.setAdapter(myCategoryAdapter);
                         }
                         else { //SCROLL_AND_LOAD
-                            newsList.addAll(newsDescriptionList);
+                            Storage.tmpNewsList.get(category_label).addAll(newsDescriptionList);
                             assert(myCategoryAdapter != null);
                             myCategoryAdapter.notifyChanged();
                             loadPulse.setVisibility(View.INVISIBLE);
@@ -206,27 +204,27 @@ public class CategoryFragment extends Fragment {
             String newsID = message[0];
             int pos = Integer.parseInt(message[1]);
             News news = Storage.findNewsValue(GlobalApplication.getAppContext(), newsID);
-            newsList.get(pos).images = (ArrayList<String>) news.images.clone();
-            System.out.println("[CategoryFragment] news result received: [pos]=" + pos + ", [news.title]=" + newsList.get(pos).title);
-            newsList.get(pos).readDetail = true;
+            Storage.tmpNewsList.get(category_label).get(pos).images = (ArrayList<String>) news.images.clone();
+            System.out.println("[CategoryFragment] news result received: [pos]=" + pos + ", [news.title]=" + Storage.tmpNewsList.get(category_label).get(pos).title);
+            Storage.tmpNewsList.get(category_label).get(pos).readDetail = true;
             if (message.length == 4) {
-                newsList.get(pos).like = true;
-                newsList.get(pos).fav = true;
+                Storage.tmpNewsList.get(category_label).get(pos).like = true;
+                Storage.tmpNewsList.get(category_label).get(pos).fav = true;
             }
             else if (message.length == 3) {
                 if (Objects.equals(message[2], "like")) {
-                    newsList.get(pos).like = true;
-                    newsList.get(pos).fav = false;
+                    Storage.tmpNewsList.get(category_label).get(pos).like = true;
+                    Storage.tmpNewsList.get(category_label).get(pos).fav = false;
                 }
                 if (Objects.equals(message[2], "fav")) {
-                    newsList.get(pos).like = false;
-                    newsList.get(pos).fav = true;
+                    Storage.tmpNewsList.get(category_label).get(pos).like = false;
+                    Storage.tmpNewsList.get(category_label).get(pos).fav = true;
                 }
             }
             else {
                 assert(message.length == 2);
-                newsList.get(pos).like = false;
-                newsList.get(pos).fav = false;
+                Storage.tmpNewsList.get(category_label).get(pos).like = false;
+                Storage.tmpNewsList.get(category_label).get(pos).fav = false;
             }
             myCategoryAdapter.notifyDataSetChanged();
         }
@@ -293,7 +291,17 @@ public class CategoryFragment extends Fragment {
                 category_chinese = "";
                 break;
         }
-        getCategoryFragment();
+
+        if (Storage.tmpNewsList.get(category_label).size() == 0) {
+            getCategoryFragment();
+        }
+        else {
+            LinearLayoutManager myLayoutManager = new LinearLayoutManager(CategoryFragment.this.getContext());
+            result.setLayoutManager(myLayoutManager);
+            myCategoryAdapter = new CategoryFragmentAdapter(mainActivityContext, CategoryFragment.this, myLayoutManager, launcher, category_label);
+            result.setAdapter(myCategoryAdapter);
+            loadPulse.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void getCategoryFragment() {

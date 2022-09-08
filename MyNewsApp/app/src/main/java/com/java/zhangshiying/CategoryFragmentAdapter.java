@@ -42,7 +42,8 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
     Fragment fragmentContext;
     LinearLayoutManager myLayoutManager;
 
-    ArrayList<News> newsList;
+    int category_label;
+
     View view;
 
     ActivityResultLauncher<String> launcher;
@@ -65,6 +66,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                         ImageView iv = (ImageView) myLayoutManager.findViewByPosition(pos).findViewById(R.id.image);
                         iv.setVisibility(View.VISIBLE);
                         iv.setImageBitmap((Bitmap)msg.obj);
+                        Storage.tmpNewsList.get(category_label).get(pos).images.add(Storage.bitmapToString((Bitmap) msg.obj));
                     } catch (Exception e) {
 //                        e.printStackTrace();
                         System.out.println("[CategoryAdapter.handleTitleImage] pos=" + pos + ": R.id.image not found");
@@ -90,6 +92,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                             iv_1.setImageBitmap(myMap.get(pos_case_2));
                             ImageView iv_2 = (ImageView) myLayoutManager.findViewByPosition(pos_case_2).findViewById(R.id.image_2);
                             iv_2.setImageBitmap((Bitmap)msg.obj);
+                            Storage.tmpNewsList.get(category_label).get(pos_case_2).images.add(Storage.bitmapToString((Bitmap) msg.obj));
                             myMap.remove(pos_case_2);
                         } catch (Exception e) {
 //                            e.printStackTrace();
@@ -101,6 +104,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                         try {
                             myMap.put(pos_case_2, (Bitmap)msg.obj);
                             mapHelper.put(pos_case_2, msg.getData().getInt("label"));
+                            Storage.tmpNewsList.get(category_label).get(pos_case_2).images.add(Storage.bitmapToString((Bitmap) msg.obj));
                         } catch (Exception e) {
 //                            e.printStackTrace();
                             System.out.println("E [CategoryAdapter.handleTitleImages] pos=" + pos_case_2 + ": image_1 error");
@@ -116,13 +120,13 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
 
     private final CategoryFragmentAdapter.CategoryHandler myHandler = new CategoryFragmentAdapter.CategoryHandler((CategoryFragment) fragmentContext);
 
-    public CategoryFragmentAdapter(ArrayList<News> newsList, Context mainActivityContext, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher<String> launcher) {
-        this.newsList = newsList;
+    public CategoryFragmentAdapter(Context mainActivityContext, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher<String> launcher, int category_label) {
         this.mainActivityContext = mainActivityContext;
         this.fragmentContext = fragment;
         this.myLayoutManager = myLayoutManager;
         this.launcher = launcher;
-        System.out.println("[CategoryAdapter.Constructor]: newsList = " + newsList);
+        this.category_label = category_label;
+        System.out.println("[CategoryAdapter.Constructor]: newsList = " + Storage.tmpNewsList.get(category_label));
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -158,7 +162,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         int pos = position;
         holder.setIsRecyclable(false);
-        News news = newsList.get(position);
+        News news = Storage.tmpNewsList.get(category_label).get(position);
         if (news.read) {
             holder.card.setStrokeColor(Color.parseColor("#DCDADA"));
             holder.card.setRippleColorResource(R.color.light_grey);
@@ -171,7 +175,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
         holder.closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                newsList.remove(holder.getAdapterPosition());
+                Storage.tmpNewsList.get(category_label).remove(holder.getAdapterPosition());
                 notifyItemRemoved(holder.getAdapterPosition());
                 notifyDataSetChanged();
             }
@@ -179,35 +183,55 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
 
         if (news.imageExist) {
             if (news.imageCount >= 2) {
-                boolean cannotLoadFromLocal = false;
+                System.out.println("[CategoryFragmentAdapter.news.imageExist]2: " + news.title + ", news.read = " + news.read);
                 if (news.read && Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID).images.size() >= 2) {
                     try {
                         ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(0)));
                         ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(1)));
                         holder.images.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
-                        cannotLoadFromLocal = true;
                         System.out.println("E [CategoryAdapter.loadTitleImagesFromLocal] pos=" + pos + ": R.id.images not found");
                         e.printStackTrace();
                     }
                 }
-                if (cannotLoadFromLocal || !news.read) {
-                    getBitmapFromURL(news.imageUrls.get(0), news.imageUrls.get(1), pos, true);
+                else if (!news.read) {
+                    if (news.images.size() >= 2) {
+                        try {
+                            System.out.println("[CategoryFragmentAdapter.news.imageExist]2: try load images from local, unread news");
+                            ((ImageView) holder.images.findViewById(R.id.image_1)).setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
+                            ((ImageView) holder.images.findViewById(R.id.image_2)).setImageBitmap(Storage.stringToBitmap(news.images.get(1)));
+                            holder.images.setVisibility(View.VISIBLE);
+                        } catch (Exception e) {
+                            getBitmapFromURL(news.imageUrls.get(0), news.imageUrls.get(1), pos, true);
+                        }
+                    }
+                    else getBitmapFromURL(news.imageUrls.get(0), news.imageUrls.get(1), pos, true);
                 }
             }
+
             else {
-                boolean cannotLoadFromLocal = false;
+                System.out.println("[CategoryFragmentAdapter.news.imageExist]1: " + news.title + ", news.read = " + news.read + ", news.images.size = " + news.images.size());
                 if (news.read && Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID).images.size() == 1) {
                     try {
                         holder.image.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(0)));
                         holder.image.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
-                        cannotLoadFromLocal = true;
                         System.out.println("E [CategoryAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
                         e.printStackTrace();
                     }
                 }
-                if (cannotLoadFromLocal || !news.read)  getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, false);
+                else if (!news.read)  {
+                    if (news.images.size() == 1) {
+                        try {
+                            System.out.println("[CategoryFragmentAdapter.news.imageExist]1: try load image from local, unread news");
+                            holder.image.setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
+                            holder.image.setVisibility(View.VISIBLE);
+                        } catch (Exception e) {
+                            getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, false);
+                        }
+                    }
+                    else getBitmapFromURL(news.imageUrls.get(0), "NO OTHER IMAGE!", pos, false);
+                }
             }
         }
 
@@ -236,10 +260,14 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
             public void onClick(View view) {
                 if (!news.read) {
                     news.read = true;
+                    news.images.clear();
                     Storage.addHis(GlobalApplication.getAppContext(), news.newsID);
+                    Storage.write(GlobalApplication.getAppContext(), news.newsID, Storage.newsToString(news));
                 }
-                else news.readDetail = true;
-                Storage.write(GlobalApplication.getAppContext(), news.newsID, Storage.newsToString(news));
+                else if (!news.readDetail) {
+                    news.readDetail = true;
+                    Storage.write(GlobalApplication.getAppContext(), news.newsID, Storage.newsToString(news));
+                }
                 System.out.println("[CategoryAdapter.onClick]: [pos] = " + pos + ", [news] = " + news.title + " @ " + news);
                 launcher.launch(news.newsID + "," + pos);
             }
@@ -347,7 +375,7 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
 
     @Override
     public int getItemCount() {
-        return newsList == null ? 0 : newsList.size();
+        return Storage.tmpNewsList.get(category_label) == null ? 0 : Storage.tmpNewsList.get(category_label).size();
     }
 
     public void notifyChanged() {notifyDataSetChanged();}
