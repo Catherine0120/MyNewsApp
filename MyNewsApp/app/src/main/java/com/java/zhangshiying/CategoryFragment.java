@@ -159,6 +159,7 @@ public class CategoryFragment extends Fragment {
             @Override
             public void onRefresh() {
                 mySwipeRefreshView.setRefreshing(true);
+                loadPulse.setVisibility(View.INVISIBLE);
                 new Thread() {
                     @Override
                     public void run() {

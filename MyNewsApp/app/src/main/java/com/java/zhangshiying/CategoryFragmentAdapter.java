@@ -216,14 +216,14 @@ public class CategoryFragmentAdapter extends RecyclerView.Adapter<CategoryFragme
                         holder.image.setImageBitmap(Storage.stringToBitmap((Storage.findNewsValue(GlobalApplication.getAppContext(), news.newsID)).images.get(0)));
                         holder.image.setVisibility(View.VISIBLE);
                     } catch (Exception e) {
-                        System.out.println("E [CategoryAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
-                        e.printStackTrace();
+//                        System.out.println("E [CategoryAdapter.loadTitleImageFromLocal] pos=" + pos + ": R.id.image not found");
+//                        e.printStackTrace();
                     }
                 }
                 else if (!news.read)  {
                     if (news.images.size() == 1) {
                         try {
-                            System.out.println("[CategoryFragmentAdapter.news.imageExist]1: try load image from local, unread news");
+//                            System.out.println("[CategoryFragmentAdapter.news.imageExist]1: try load image from local, unread news");
                             holder.image.setImageBitmap(Storage.stringToBitmap(news.images.get(0)));
                             holder.image.setVisibility(View.VISIBLE);
                         } catch (Exception e) {

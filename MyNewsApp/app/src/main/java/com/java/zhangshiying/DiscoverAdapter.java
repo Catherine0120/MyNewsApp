@@ -129,7 +129,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
 
     public DiscoverAdapter(ArrayList<News> newsList, Context context, Fragment fragment, LinearLayoutManager myLayoutManager, ActivityResultLauncher<String> launcher) {
         this.mainActivityContext = context;
-        this.newsList = newsList;
+        if (newsList != null) this.newsList = (ArrayList<News>) newsList.clone();
         this.fragmentContext = fragment;
         this.myLayoutManager = myLayoutManager;
         this.launcher = launcher;
@@ -161,7 +161,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = View.inflate(mainActivityContext, R.layout.news_card_layout, null);
+        view = View.inflate(parent.getContext(), R.layout.news_card_layout, null);
         return new MyViewHolder(view);
     }
 
@@ -370,6 +370,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.MyView
     }
 
     public void addNewsList(ArrayList<News> newsList) {
+        this.newsList.addAll(newsList);
         notifyDataSetChanged();
     }
 

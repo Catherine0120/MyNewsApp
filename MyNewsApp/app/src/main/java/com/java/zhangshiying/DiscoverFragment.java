@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -84,8 +85,8 @@ public class DiscoverFragment extends Fragment {
                     if (tmpCount == urlsFromSearch.size()) {
                         LinearLayoutManager myLayoutManager = new LinearLayoutManager(DiscoverFragment.this.getContext());
                         result.setLayoutManager(myLayoutManager);
-                        newsList = tmpNewsList;
-                        myDiscoverAdapter = new DiscoverAdapter(tmpNewsList, context, DiscoverFragment.this, myLayoutManager, launcher);
+                        if (tmpNewsList != null) newsList = (ArrayList<News>) tmpNewsList.clone();
+                        myDiscoverAdapter = new DiscoverAdapter(newsList, context, DiscoverFragment.this, myLayoutManager, launcher);
                         result.setAdapter(myDiscoverAdapter);
                         tmpCount = 0;
                         tmpNewsList.clear();
@@ -129,6 +130,7 @@ public class DiscoverFragment extends Fragment {
             @Override
             public void onRefresh() {
                 mySwipeRefreshView.setRefreshing(true);
+                loadPulse.setVisibility(View.INVISIBLE);
                 new Thread() {
                     @Override
                     public void run() {
@@ -180,6 +182,7 @@ public class DiscoverFragment extends Fragment {
             String newsID = message[0];
             int pos = Integer.parseInt(message[1]);
             News news = Storage.findNewsValue(context.getApplicationContext(), newsID);
+
             newsList.get(pos).images = (ArrayList<String>) news.images.clone();
 //            System.out.println("[DiscoverFragment] news result received: [pos]=" + pos + ", [news.title]=" + newsList.get(pos).title);
             newsList.get(pos).readDetail = true;
@@ -260,6 +263,9 @@ public class DiscoverFragment extends Fragment {
                 myHandler.sendMessage(msg);
 
             } catch (Exception e) {
+                Looper.prepare();
+                Toast.makeText(getContext(), "Network Failure", Toast.LENGTH_SHORT).show();
+                Looper.loop();
 //                e.printStackTrace();
             }
         }
